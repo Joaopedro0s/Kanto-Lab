@@ -60,7 +60,12 @@
     details.className = "theme-switcher";
 
     const summary = document.createElement("summary");
-    summary.innerHTML = '<span aria-hidden="true">🎨</span> Tema';
+    summary.innerHTML =
+      '<span class="theme-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M12 2a10 10 0 1 0 0 20 2 2 0 0 0 0-4 2 2 0 0 1 0-4h3a3 3 0 0 0 3-3 8 8 0 0 0-6-9z"/>' +
+      '<circle cx="7.5" cy="10.5" r="1.1" fill="currentColor" stroke="none"/>' +
+      '<circle cx="11" cy="7" r="1.1" fill="currentColor" stroke="none"/>' +
+      '<circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/></svg></span> Tema';
     details.appendChild(summary);
 
     const menu = document.createElement("div");

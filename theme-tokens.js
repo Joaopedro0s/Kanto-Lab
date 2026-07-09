@@ -1,11 +1,11 @@
 /* ==========================================================================
    theme-tokens.js
    Cada tema é um objeto JS com os "tokens" (cores, formas, tipografia).
-   Estilo alvo: cartão de pergaminho com borda grossa arredondada, painel
-   translúcido com borda dourada, cenário ilustrado (céu + grama) atrás de
-   tudo — igual à referência que o usuário mandou, só que com cenário
-   original (sem personagens de terceiros), já que os sprites individuais
-   de Pokémon continuam vindo da PokéAPI como já eram.
+
+   Estilo alvo: line art com contorno preto grosso, cores chapadas (sem
+   gradiente/blur), sombra dura deslocada (sem blur), cartões com borda
+   grossa — visual de pôster/menu de jogo, limpo e de alto contraste.
+   Paleta base: amarelo vibrante + azul elétrico + branco.
 
    Trocar de tema = trocar qual chave deste objeto está ativa; css-engine.js
    lê o objeto e escreve/atualiza um <style> na página.
@@ -19,144 +19,125 @@
 
   const THEME_TOKENS = {
     /* ------------------------------------------------------------------
-       LIGHT — dia ensolarado: céu azul, grama viva, cards de pergaminho
-       creme com borda verde-escura, painel navy translúcido com borda
-       dourada (a mesma combinação da referência).
+       LIGHT — fundo branco liso, contorno preto grosso, amarelo vibrante
+       como cor de destaque principal e azul elétrico como secundária.
        ------------------------------------------------------------------ */
     light: {
       label: "Claro",
-      swatch: "#3aa15c",
+      swatch: "#ffc93c",
 
-      bg: "#eef6ff",
-      bgElevated: "#fffaf0",
-      bgInset: "#f3ecd8",
-      text: "#233326",
-      textMuted: "#5c6a5e",
-      border: "#d8dce6",
-      borderStrong: "#2f5232",
-      accent: "#e8a33d",
-      accentContrast: "#2a1c05",
-      accent2: "#3a86ff",
+      bg: "#ffffff",
+      bgElevated: "#ffffff",
+      bgInset: "#f4f5fa",
+      text: "#14141a",
+      textMuted: "#54596e",
+      border: "#d8dbe6",
+      borderStrong: "#14141a",
+      accent: "#ffc93c",
+      accentContrast: "#14141a",
+      accent2: "#2e6ff2",
 
-      colorCorrect: "#2fa84f", colorCorrectBg: "#c9f2d3",
-      colorClose: "#e0a72e", colorCloseBg: "#fbe6b8",
-      colorWrong: "#e8703f", colorWrongBg: "#fbd6c3",
-      colorNeutral: "#9aa1b1", colorNeutralBg: "#e7e9f0",
+      colorCorrect: "#2fa84f", colorCorrectBg: "#d8f5df",
+      colorClose: "#e0a72e", colorCloseBg: "#fff0c2",
+      colorWrong: "#e8483f", colorWrongBg: "#ffe0dc",
+      colorNeutral: "#8a8fa3", colorNeutralBg: "#eef0f5",
 
-      group1Bg: "#f6e6a1", group1Text: "#6b5900",
-      group2Bg: "#a8dab5", group2Text: "#1c5c2e",
-      group3Bg: "#a9c9f5", group3Text: "#1c3f7a",
-      group4Bg: "#d5b3e8", group4Text: "#5a2578",
+      group1Bg: "#fff0b0", group1Text: "#6b5900",
+      group2Bg: "#bdeecb", group2Text: "#1c5c2e",
+      group3Bg: "#c7d9fb", group3Text: "#1c3f7a",
+      group4Bg: "#e6cdf5", group4Text: "#5a2578",
 
-      shadow: "0 10px 26px rgba(35, 51, 38, 0.18)",
+      shadow: "5px 5px 0 0 #14141a",
       radius: "14px",
 
-      skyTop: "#6ec6ff",
-      skyBottom: "#cfeaff",
-      sunColor: "rgba(255, 244, 191, 0.9)",
-      cloudColor: "rgba(255, 255, 255, 0.75)",
-      grassTop: "#7bc36a",
-      grassBottom: "#4e9a48",
-      grassDetail: "rgba(45, 90, 40, 0.35)",
-      sceneOpacity: "1",
+      cardBg: "#ffffff",
+      cardBorder: "#14141a",
+      cardBorderWidth: "3px",
+      cardRadius: "20px",
+      cardShadow: "5px 5px 0 0 #14141a",
 
-      cardBg: "#fffaf0",
-      cardBorder: "#2f5232",
-      cardBorderWidth: "4px",
-      cardRadius: "22px",
-      cardShadow: "0 6px 0 0 #2f5232",
-
-      panelBg: "rgba(23, 37, 58, 0.88)",
-      panelBorder: "#e8a33d",
+      panelBg: "#ffffff",
+      panelBorder: "#14141a",
       panelBorderWidth: "4px",
-      panelRadius: "26px",
-      panelText: "#f5f1e6",
-      panelTextMuted: "#c7d0d8",
-      panelShadow: "0 14px 34px rgba(10, 16, 28, 0.35)",
+      panelRadius: "24px",
+      panelText: "#14141a",
+      panelTextMuted: "#54596e",
+      panelShadow: "6px 6px 0 0 #14141a",
 
-      pillBg: "#2f5232",
-      pillText: "#f5f1e6",
-      pillBorder: "#1d3720",
+      pillBg: "#2e6ff2",
+      pillText: "#ffffff",
+      pillBorder: "#14141a",
 
       fontDisplay: FONT_DISPLAY,
       fontBody: FONT_BODY,
     },
 
     /* ------------------------------------------------------------------
-       DARK — mesma cena, hora do entardecer/noite: céu em degradê roxo,
-       grama mais escura, painel com borda em ciano.
+       DARK — mesmo vocabulário (contorno grosso, cor chapada, sombra
+       dura), mas com fundo quase-preto e contorno em branco/azul elétrico
+       (contorno preto ficaria invisível sobre fundo escuro).
        ------------------------------------------------------------------ */
     dark: {
       label: "Escuro",
-      swatch: "#7fd6ff",
+      swatch: "#5b8cff",
 
-      bg: "#0f1420",
-      bgElevated: "#1c2436",
-      bgInset: "#232c42",
-      text: "#eef0f8",
-      textMuted: "#a7b0c2",
+      bg: "#14141a",
+      bgElevated: "#1e1f2b",
+      bgInset: "#262838",
+      text: "#f5f6fa",
+      textMuted: "#a7acc2",
       border: "#34374d",
-      borderStrong: "#7fd6ff",
-      accent: "#ff9b5e",
-      accentContrast: "#241202",
-      accent2: "#7fd6ff",
+      borderStrong: "#f5f6fa",
+      accent: "#ffd35c",
+      accentContrast: "#14141a",
+      accent2: "#5b8cff",
 
       colorCorrect: "#4cd07d", colorCorrectBg: "#163526",
       colorClose: "#f0b93b", colorCloseBg: "#3a2f13",
-      colorWrong: "#ff7a52", colorWrongBg: "#3a1c14",
-      colorNeutral: "#6d7288", colorNeutralBg: "#22243354",
+      colorWrong: "#ff7a6e", colorWrongBg: "#3a1c17",
+      colorNeutral: "#7f84a0", colorNeutralBg: "#22243354",
 
-      group1Bg: "#4a3f0f", group1Text: "#f6e6a1",
+      group1Bg: "#4a3f0f", group1Text: "#ffe082",
       group2Bg: "#16401f", group2Text: "#a8dab5",
       group3Bg: "#1a3357", group3Text: "#a9c9f5",
-      group4Bg: "#3c2050", group4Text: "#d5b3e8",
+      group4Bg: "#3c2050", group4Text: "#e2b6f5",
 
-      shadow: "0 10px 28px rgba(0, 0, 0, 0.5)",
+      shadow: "5px 5px 0 0 #000000",
       radius: "14px",
 
-      skyTop: "#141b33",
-      skyBottom: "#2b3a63",
-      sunColor: "rgba(210, 224, 255, 0.55)",
-      cloudColor: "rgba(255, 255, 255, 0.08)",
-      grassTop: "#1f3a2c",
-      grassBottom: "#12241a",
-      grassDetail: "rgba(0, 0, 0, 0.35)",
-      sceneOpacity: "1",
+      cardBg: "#1e1f2b",
+      cardBorder: "#5b8cff",
+      cardBorderWidth: "3px",
+      cardRadius: "20px",
+      cardShadow: "5px 5px 0 0 #5b8cff",
 
-      cardBg: "#1c2436",
-      cardBorder: "#7fd6ff",
-      cardBorderWidth: "4px",
-      cardRadius: "22px",
-      cardShadow: "0 6px 0 0 #10151f",
-
-      panelBg: "rgba(12, 16, 28, 0.88)",
-      panelBorder: "#7fd6ff",
+      panelBg: "#1e1f2b",
+      panelBorder: "#5b8cff",
       panelBorderWidth: "4px",
-      panelRadius: "26px",
-      panelText: "#eef0f8",
-      panelTextMuted: "#a7b0c2",
-      panelShadow: "0 14px 34px rgba(0, 0, 0, 0.55)",
+      panelRadius: "24px",
+      panelText: "#f5f6fa",
+      panelTextMuted: "#a7acc2",
+      panelShadow: "6px 6px 0 0 #5b8cff",
 
       pillBg: "#2a3550",
-      pillText: "#eef0f8",
-      pillBorder: "#7fd6ff",
+      pillText: "#f5f6fa",
+      pillBorder: "#5b8cff",
 
       fontDisplay: FONT_DISPLAY,
       fontBody: FONT_BODY,
     },
 
     /* ------------------------------------------------------------------
-       COLORBLIND — mantém a cena, mas os tokens de feedback usam a
-       paleta azul/laranja/cinza; painel com borda laranja bem saturada
-       para ficar fácil de distinguir do fundo.
+       COLORBLIND — mesmo tratamento de linha grossa/cor chapada; paleta
+       azul/laranja/cinza (evita depender de vermelho/verde).
        ------------------------------------------------------------------ */
     colorblind: {
       label: "Amigável p/ daltônicos",
-      swatch: "#005fa3",
+      swatch: "#e08300",
 
-      bg: "#f2f6fa",
+      bg: "#ffffff",
       bgElevated: "#ffffff",
-      bgInset: "#ececea",
+      bgInset: "#f0f0ee",
       text: "#1a1a1a",
       textMuted: "#55575c",
       border: "#d6d6d2",
@@ -175,44 +156,35 @@
       group3Bg: "#d9d9d9", group3Text: "#1a1a1a",
       group4Bg: "#ffd0e0", group4Text: "#6b1030",
 
-      shadow: "0 10px 24px rgba(20, 20, 20, 0.16)",
+      shadow: "5px 5px 0 0 #1a1a1a",
       radius: "14px",
 
-      skyTop: "#8fc7ea",
-      skyBottom: "#e4eff7",
-      sunColor: "rgba(255, 226, 168, 0.85)",
-      cloudColor: "rgba(255, 255, 255, 0.8)",
-      grassTop: "#8fae5a",
-      grassBottom: "#5f7d3a",
-      grassDetail: "rgba(40, 55, 20, 0.3)",
-      sceneOpacity: "1",
-
       cardBg: "#ffffff",
-      cardBorder: "#005fa3",
-      cardBorderWidth: "4px",
-      cardRadius: "22px",
-      cardShadow: "0 6px 0 0 #003a5c",
+      cardBorder: "#1a1a1a",
+      cardBorderWidth: "3px",
+      cardRadius: "20px",
+      cardShadow: "5px 5px 0 0 #1a1a1a",
 
-      panelBg: "rgba(20, 26, 33, 0.9)",
-      panelBorder: "#e08300",
+      panelBg: "#ffffff",
+      panelBorder: "#1a1a1a",
       panelBorderWidth: "4px",
-      panelRadius: "26px",
-      panelText: "#ffffff",
-      panelTextMuted: "#cfd6db",
-      panelShadow: "0 14px 34px rgba(0, 0, 0, 0.4)",
+      panelRadius: "24px",
+      panelText: "#1a1a1a",
+      panelTextMuted: "#55575c",
+      panelShadow: "6px 6px 0 0 #1a1a1a",
 
-      pillBg: "#003a5c",
+      pillBg: "#005fa3",
       pillText: "#ffffff",
-      pillBorder: "#e08300",
+      pillBorder: "#1a1a1a",
 
       fontDisplay: FONT_DISPLAY,
       fontBody: FONT_BODY,
     },
 
     /* ------------------------------------------------------------------
-       HIGH CONTRAST — cenário desligado (ruído visual atrapalha quem
-       mais precisa deste tema): fundo preto liso, cards e painel com
-       bordas grossas em amarelo neon, máximo contraste de texto.
+       HIGH CONTRAST — preto absoluto + amarelo neon; já é, por natureza,
+       o tema que mais se aproxima do "line art" (bordas grossas, zero
+       gradiente); só reforçamos a espessura e o padrão de sombra dura.
        ------------------------------------------------------------------ */
     "high-contrast": {
       label: "Alto contraste",
@@ -239,23 +211,14 @@
       group3Bg: "#002733", group3Text: "#00e5ff",
       group4Bg: "#2a002e", group4Text: "#ff8cf0",
 
-      shadow: "0 0 0 2px #4d4d4d",
+      shadow: "5px 5px 0 0 #ffd400",
       radius: "10px",
-
-      skyTop: "#000000",
-      skyBottom: "#000000",
-      sunColor: "rgba(0,0,0,0)",
-      cloudColor: "rgba(0,0,0,0)",
-      grassTop: "#000000",
-      grassBottom: "#000000",
-      grassDetail: "rgba(0,0,0,0)",
-      sceneOpacity: "0",
 
       cardBg: "#0d0d0d",
       cardBorder: "#ffd400",
       cardBorderWidth: "4px",
       cardRadius: "16px",
-      cardShadow: "0 0 0 2px #ffd400",
+      cardShadow: "5px 5px 0 0 #ffd400",
 
       panelBg: "#000000",
       panelBorder: "#ffd400",
@@ -263,7 +226,7 @@
       panelRadius: "18px",
       panelText: "#ffffff",
       panelTextMuted: "#cfcfcf",
-      panelShadow: "0 0 0 2px #ffd400",
+      panelShadow: "6px 6px 0 0 #ffd400",
 
       pillBg: "#1a1a1a",
       pillText: "#ffd400",

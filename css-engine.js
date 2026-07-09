@@ -49,15 +49,6 @@
   --shadow: ${t.shadow};
   --radius: ${t.radius};
 
-  --sky-top: ${t.skyTop};
-  --sky-bottom: ${t.skyBottom};
-  --sun-color: ${t.sunColor};
-  --cloud-color: ${t.cloudColor};
-  --grass-top: ${t.grassTop};
-  --grass-bottom: ${t.grassBottom};
-  --grass-detail: ${t.grassDetail};
-  --scene-opacity: ${t.sceneOpacity};
-
   --card-bg: ${t.cardBg};
   --card-border: ${t.cardBorder};
   --card-border-width: ${t.cardBorderWidth};
@@ -90,10 +81,9 @@ body {
   margin: 0;
   font-family: var(--font-body);
   color: var(--text);
+  background: var(--bg);
   min-height: 100vh;
   transition: background-color .3s ease, color .3s ease;
-  position: relative;
-  isolation: isolate;
 }
 
 img { max-width: 100%; display: block; }
@@ -110,42 +100,7 @@ input:focus-visible,
   outline-offset: 2px;
 }
 
-.container { max-width: 1100px; margin: 0 auto; padding: 0 20px 80px; position: relative; z-index: 1; }
-
-/* ==========================================================================
-   CENÁRIO — céu, sol, nuvens e grama, fixos atrás de tudo. Puramente
-   decorativo e feito só com gradientes CSS (sem arte de terceiros).
-   Desligado no tema alto-contraste (--scene-opacity: 0) para não
-   atrapalhar legibilidade.
-   ========================================================================== */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  opacity: var(--scene-opacity);
-  background:
-    radial-gradient(480px 300px at 50% -60px, var(--sun-color), transparent 70%),
-    radial-gradient(220px 90px at 15% 18%, var(--cloud-color), transparent 70%),
-    radial-gradient(260px 100px at 82% 10%, var(--cloud-color), transparent 70%),
-    radial-gradient(180px 80px at 60% 26%, var(--cloud-color), transparent 70%),
-    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 62%, var(--sky-bottom) 100%);
-  transition: opacity .3s ease;
-}
-body::after {
-  content: "";
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  height: 130px;
-  z-index: -1;
-  opacity: var(--scene-opacity);
-  background:
-    radial-gradient(circle, var(--grass-detail) 0 5px, transparent 6px) 10px 22px / 90px 60px repeat-x,
-    radial-gradient(circle, var(--grass-detail) 0 4px, transparent 5px) 55px 46px / 90px 60px repeat-x,
-    linear-gradient(180deg, var(--grass-top) 0%, var(--grass-bottom) 100%);
-  border-radius: 50% 50% 0 0 / 28px 28px 0 0;
-  transition: opacity .3s ease;
-}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px 80px; }
 
 /* ---------- título "bolha" (logo / headings grandes) ---------- */
 .bubble-title {
@@ -167,7 +122,8 @@ body::after {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 22px;
-  background: transparent;
+  background: var(--bg-elevated);
+  border-bottom: 3px solid var(--border-strong);
   position: sticky;
   top: 0;
   z-index: 40;
@@ -190,7 +146,7 @@ body::after {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: conic-gradient(var(--color-wrong) 0 50%, #fff 50% 100%);
+  background: conic-gradient(var(--accent) 0 50%, var(--accent-2) 50% 100%);
   border: 3px solid var(--border-strong);
   position: relative;
   flex-shrink: 0;
@@ -203,7 +159,7 @@ body::after {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-elevated);
   border: 3px solid var(--border-strong);
 }
 
@@ -212,7 +168,7 @@ body::after {
   gap: 8px;
   flex-wrap: wrap;
   background: var(--bg-elevated);
-  border: 2px solid var(--border-strong);
+  border: 3px solid var(--border-strong);
   border-radius: 999px;
   padding: 4px;
   box-shadow: var(--shadow);
@@ -244,7 +200,7 @@ body::after {
   gap: 6px;
   padding: 9px 16px;
   border-radius: 999px;
-  border: 2px solid var(--border-strong);
+  border: 3px solid var(--border-strong);
   background: var(--bg-elevated);
   font-size: .84rem;
   font-weight: 800;
@@ -284,7 +240,7 @@ body::after {
 .theme-menu button[aria-pressed="true"] { color: var(--accent-2); }
 .theme-swatch {
   width: 16px; height: 16px; border-radius: 50%;
-  border: 2px solid var(--border-strong);
+  border: 3px solid var(--border-strong);
   flex-shrink: 0;
 }
 
@@ -299,11 +255,30 @@ main > h1 {
   text-shadow: 2px 2px 0 var(--border-strong), 4px 4px 0 rgba(0,0,0,0.15);
   font-size: clamp(1.6rem, 4.5vw, 2.6rem);
   margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
+.title-icon {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  color: var(--accent);
+  -webkit-text-stroke: 0;
+}
+.title-icon svg { width: 100%; height: 100%; }
+
+.theme-switcher summary .theme-icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+.theme-switcher summary .theme-icon svg { width: 100%; height: 100%; }
 .hero p {
   color: var(--text);
   background: var(--bg-elevated);
-  border: 2px solid var(--border-strong);
+  border: 3px solid var(--border-strong);
   border-radius: 18px;
   padding: 12px 20px;
   max-width: 640px;
@@ -334,7 +309,8 @@ main > h1 {
   transition: transform .12s ease, box-shadow .12s ease;
 }
 .game-card:hover { transform: translateY(-4px); }
-.game-card .emoji { font-size: 2.3rem; }
+.game-card .card-icon { display: inline-flex; width: 40px; height: 40px; color: var(--accent-2); }
+.game-card .card-icon svg { width: 100%; height: 100%; }
 .game-card h2 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; color: var(--text); }
 .game-card p { margin: 0; color: var(--text-muted); font-size: .95rem; line-height: 1.5; font-weight: 600; }
 .game-card .cta {
@@ -356,17 +332,17 @@ main > h1 {
   font-size: .92rem;
   background: var(--accent);
   color: var(--accent-contrast);
-  box-shadow: 0 5px 0 0 var(--border-strong);
+  box-shadow: 4px 4px 0 0 var(--border-strong);
   transition: transform .06s ease, box-shadow .06s ease, filter .12s ease;
 }
 .btn:hover:not(:disabled) { filter: brightness(1.06); }
 .btn:active:not(:disabled) {
-  transform: translateY(4px);
-  box-shadow: 0 1px 0 0 var(--border-strong);
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 0 var(--border-strong);
 }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 
-.btn.secondary { background: var(--bg-elevated); color: var(--text); }
+.btn.secondary { background: var(--accent-2); color: #ffffff; }
 .btn.ghost { background: transparent; color: var(--text); box-shadow: none; border-color: var(--border); }
 .btn.ghost:active:not(:disabled) { transform: translateY(2px); }
 
@@ -390,13 +366,13 @@ main > h1 {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 4px 0 0 var(--card-border);
+  box-shadow: 4px 4px 0 0 var(--card-border);
   transition: transform .1s ease, box-shadow .1s ease;
 }
-.difficulty-card:hover { transform: translateY(-2px); }
+.difficulty-card:hover { transform: translate(-2px, -2px); }
 .difficulty-card.selected {
-  box-shadow: 0 4px 0 0 var(--card-border), 0 0 0 3px var(--accent-2);
-  transform: translateY(-2px);
+  box-shadow: 4px 4px 0 0 var(--card-border), 0 0 0 3px var(--accent-2);
+  transform: translate(-2px, -2px);
 }
 .difficulty-card h3 {
   margin: 0; font-size: 1.02rem; display: flex; align-items: center; gap: 8px;
@@ -409,7 +385,7 @@ main > h1 {
 .diff-hard .diff-dot { background: var(--color-close); }
 .diff-hardcore .diff-dot { background: var(--color-wrong); }
 
-/* ---------- painel principal (vidro translúcido, borda dourada) ---------- */
+/* ---------- painel principal (cartão chapado, contorno grosso) ---------- */
 .game-panel {
   background: var(--panel-bg);
   border: var(--panel-border-width) solid var(--panel-border);
@@ -417,7 +393,6 @@ main > h1 {
   padding: 26px;
   box-shadow: var(--panel-shadow);
   color: var(--panel-text);
-  backdrop-filter: blur(6px);
 }
 .game-panel h2, .game-panel h1 { color: var(--panel-text); }
 .game-panel .text-muted { color: var(--panel-text-muted); }
@@ -433,7 +408,7 @@ main > h1 {
 
 .pill {
   background: var(--pill-bg);
-  border: 2px solid var(--pill-border);
+  border: 3px solid var(--pill-border);
   border-radius: 999px;
   padding: 6px 16px;
   font-size: .78rem;
@@ -516,7 +491,7 @@ main > h1 {
 
 .attempt-row .thumb {
   background: var(--bg-elevated);
-  border: 2px solid var(--border-strong);
+  border: 3px solid var(--border-strong);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -526,6 +501,7 @@ main > h1 {
 .attempt-row .thumb img { width: 100%; height: 100%; object-fit: contain; }
 
 .cell {
+  border: 2px solid var(--border-strong);
   border-radius: 12px;
   padding: 8px 6px;
   font-size: .78rem;
@@ -537,7 +513,6 @@ main > h1 {
   justify-content: center;
   gap: 2px;
   min-height: 58px;
-  color: #2a1c05;
   position: relative;
   animation: pop-in .3s cubic-bezier(.2,1.4,.4,1) both;
 }
@@ -551,13 +526,13 @@ main > h1 {
   opacity: .75;
 }
 
-.cell.correct { background: var(--color-correct-bg); color: #14501f; }
+.cell.correct { background: var(--color-correct-bg); color: var(--color-correct); }
 .cell.correct::before { content: "✓"; }
-.cell.close { background: var(--color-close-bg); color: #6b4b04; }
+.cell.close { background: var(--color-close-bg); color: var(--color-close); }
 .cell.close::before { content: "≈"; }
-.cell.wrong { background: var(--color-wrong-bg); color: #7a2c0c; }
+.cell.wrong { background: var(--color-wrong-bg); color: var(--color-wrong); }
 .cell.wrong::before { content: "✕"; }
-.cell.neutral { background: var(--color-neutral-bg); color: #3a3f4c; }
+.cell.neutral { background: var(--color-neutral-bg); color: var(--color-neutral); }
 .cell.neutral::before { content: "–"; }
 
 @keyframes pop-in {
@@ -588,7 +563,7 @@ main > h1 {
   background:
     radial-gradient(circle at center, var(--bg-elevated) 0 2.5px, transparent 2.7px),
     linear-gradient(var(--color-neutral) 0 50%, var(--bg-elevated) 50% 52%, var(--color-neutral) 52% 100%);
-  border: 2px solid var(--border-strong);
+  border: 3px solid var(--border-strong);
 }
 .attempts-remaining .dot.used {
   background:
@@ -613,7 +588,7 @@ main > h1 {
   background: var(--card-bg);
   border: var(--card-border-width) solid var(--card-border);
   border-radius: var(--card-radius);
-  box-shadow: 0 10px 0 0 var(--card-border);
+  box-shadow: 8px 8px 0 0 var(--card-border);
   max-width: 640px;
   width: 100%;
   max-height: 85vh;
@@ -632,7 +607,7 @@ main > h1 {
 .modal-header h2 { margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--text); }
 .modal-close {
   background: var(--bg-inset);
-  border: 2px solid var(--border-strong);
+  border: 3px solid var(--border-strong);
   border-radius: 50%;
   width: 36px; height: 36px;
   font-size: 1.1rem;
@@ -664,7 +639,10 @@ main > h1 {
 
 /* ---------- fim de jogo ---------- */
 .end-screen { text-align: center; }
-.end-screen .result-emoji { font-size: 3.2rem; }
+.end-screen .result-icon { display: inline-flex; width: 56px; height: 56px; }
+.end-screen .result-icon svg { width: 100%; height: 100%; }
+.end-screen .result-icon.win { color: var(--color-correct); }
+.end-screen .result-icon.lose { color: var(--color-wrong); }
 .end-screen h2 { margin: 6px 0; font-family: var(--font-display); font-weight: 800; }
 .end-screen .secret-reveal {
   display: flex;
@@ -694,7 +672,7 @@ main > h1 {
 }
 .toast {
   background: var(--card-bg);
-  border: 2px solid var(--card-border);
+  border: 3px solid var(--card-border);
   border-left: 7px solid var(--accent-2);
   border-radius: 14px;
   padding: 12px 16px;

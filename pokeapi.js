@@ -57,8 +57,18 @@
 
   // --------------------------------------------------------------------
   // Sprites — montamos a URL direto, sem precisar de requisição.
+  //
+  // raw.githubusercontent.com não é uma CDN pensada pra uso em produção
+  // (a própria GitHub recomenda não fazer hotlink nela) e derruba/atrasa
+  // imagens quando várias são pedidas de uma vez — foi a causa da
+  // pokébola de placeholder aparecendo no lugar do sprite. jsDelivr
+  // espelha o mesmo repositório como CDN de verdade, então vira a fonte
+  // principal; o GitHub some como plano B, e o placeholder só aparece se
+  // as duas falharem.
   // --------------------------------------------------------------------
-  const SPRITES_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+  const JSDELIVR_BASE = "https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon";
+  const GITHUB_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
+
   // Nota: usamos %22 no lugar de aspas literais porque esta string é
   // inserida dentro de um atributo HTML (onerror="...") que também usa
   // aspas duplas — aspas literais aqui quebrariam o atributo.
@@ -70,24 +80,25 @@
     "</svg>";
 
   function officialArtworkUrl(id) {
-    return SPRITES_BASE + "/other/official-artwork/" + id + ".png";
+    return JSDELIVR_BASE + "/other/official-artwork/" + id + ".png";
   }
   function simpleSpriteUrl(id) {
-    return SPRITES_BASE + "/" + id + ".png";
+    return JSDELIVR_BASE + "/" + id + ".png";
   }
 
-  // --------------------------------------------------------------------
-  // Fallback de sprite — a CDN do GitHub (raw.githubusercontent.com) às
-  // vezes falha em requisições isoladas quando várias imagens são
-  // pedidas de uma vez (ex.: os 16 tiles do MonLink). Em vez de já
-  // cair direto no ícone de pokébola genérico, tentamos uma segunda URL
-  // (o artwork oficial, hospedado no mesmo repo mas em outro caminho)
-  // antes de desistir. Chamado via onerror="PokeAPI.handleSpriteError(this, id)".
-  // --------------------------------------------------------------------
+  // Cadeia de fallback: jsDelivr (sprite simples) → GitHub (sprite
+  // simples, host diferente) → jsDelivr (artwork oficial) → placeholder.
+  // Chamado via onerror="PokeAPI.handleSpriteError(this, id)".
+  const SPRITE_FALLBACK_CHAIN = [
+    (id) => GITHUB_BASE + "/" + id + ".png",
+    (id) => officialArtworkUrl(id),
+  ];
+
   function handleSpriteError(imgEl, id) {
-    if (!imgEl.dataset.retried) {
-      imgEl.dataset.retried = "1";
-      imgEl.src = officialArtworkUrl(id);
+    const tier = parseInt(imgEl.dataset.spriteTier || "0", 10);
+    if (tier < SPRITE_FALLBACK_CHAIN.length) {
+      imgEl.dataset.spriteTier = String(tier + 1);
+      imgEl.src = SPRITE_FALLBACK_CHAIN[tier](id);
     } else {
       imgEl.src = PLACEHOLDER_SPRITE;
     }

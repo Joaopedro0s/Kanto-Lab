@@ -64,7 +64,7 @@ português.
 
 ## Temas
 
-Quatro temas disponíveis a qualquer momento pelo botão "🎨 Tema" no
+Quatro temas disponíveis a qualquer momento pelo botão "Tema" no
 topo: Claro, Escuro, Amigável para daltônicos (paleta azul/laranja,
 evita depender só de vermelho/verde) e Alto contraste. A escolha fica
 salva no navegador (`localStorage`) só como preferência de interface —
