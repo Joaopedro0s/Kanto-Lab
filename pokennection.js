@@ -415,7 +415,7 @@
       btn.dataset.id = item.id;
       btn.innerHTML =
         '<img src="' + PokeAPI.simpleSpriteUrl(item.id) + '" alt="" ' +
-        "onerror=\"this.src='" + PokeAPI.PLACEHOLDER_SPRITE + "'\" />" +
+        "onerror=\"PokeAPI.handleSpriteError(this, " + item.id + ")\" />" +
         "<span>" + capitalize(item.name) + "</span>";
       btn.addEventListener("click", () => onTileClick(item, btn));
       el.grid.appendChild(btn);

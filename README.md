@@ -163,4 +163,3 @@ Dados de Pokémon: [PokéAPI](https://pokeapi.co). Sprites:
 público). Projeto de fã, sem fins lucrativos, não afiliado à Nintendo,
 Game Freak ou Creatures Inc. Pokémon e os nomes dos personagens são
 marcas registradas de seus respectivos donos.
-# Kanto-Lab

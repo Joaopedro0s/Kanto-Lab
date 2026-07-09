@@ -193,7 +193,7 @@
         if (guessedIds.has(p.id)) btn.classList.add("guessed");
         btn.innerHTML =
           '<img src="' + PokeAPI.simpleSpriteUrl(p.id) + '" alt="" loading="lazy" ' +
-          "onerror=\"this.src='" + PokeAPI.PLACEHOLDER_SPRITE + "'\" />" +
+          "onerror=\"PokeAPI.handleSpriteError(this, " + p.id + ")\" />" +
           "<span>" + capitalize(p.name) + "</span>";
         btn.addEventListener("click", () => {
           closeModal(el.modalList);
@@ -229,7 +229,7 @@
       .map(
         (p, i) =>
           '<button type="button" data-id="' + p.id + '" class="' + (i === 0 ? "highlighted" : "") + '">' +
-          '<img src="' + PokeAPI.simpleSpriteUrl(p.id) + '" alt="" onerror="this.src=\'' + PokeAPI.PLACEHOLDER_SPRITE + '\'" />' +
+          '<img src="' + PokeAPI.simpleSpriteUrl(p.id) + '" alt="" onerror="PokeAPI.handleSpriteError(this, ' + p.id + ')" />' +
           "<span>" + capitalize(p.name) + "</span></button>"
       )
       .join("");
@@ -358,7 +358,7 @@
     thumb.title = capitalize(guessFull.name);
     thumb.innerHTML =
       '<img src="' + PokeAPI.simpleSpriteUrl(guessFull.id) + '" alt="' + capitalize(guessFull.name) +
-      '" onerror="this.src=\'' + PokeAPI.PLACEHOLDER_SPRITE + '\'" />';
+      '" onerror="PokeAPI.handleSpriteError(this, ' + guessFull.id + ')" />';
     row.appendChild(thumb);
 
     state.activeAttributes.forEach((attr) => {

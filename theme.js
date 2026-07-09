@@ -37,6 +37,10 @@
 
   function applyTheme(id) {
     document.documentElement.setAttribute("data-theme", id);
+    // css-engine.js é quem realmente pinta a página: injeta/atualiza o
+    // <style> com as variáveis deste tema. Sem ele carregado, a troca de
+    // atributo sozinha não muda mais nada (não há themes.css estático).
+    if (window.PokeStyles) window.PokeStyles.setTheme(id);
     document.querySelectorAll("[data-theme-option]").forEach((btn) => {
       btn.setAttribute("aria-pressed", String(btn.dataset.themeOption === id));
     });

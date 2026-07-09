@@ -77,6 +77,23 @@
   }
 
   // --------------------------------------------------------------------
+  // Fallback de sprite — a CDN do GitHub (raw.githubusercontent.com) às
+  // vezes falha em requisições isoladas quando várias imagens são
+  // pedidas de uma vez (ex.: os 16 tiles do Pokennection). Em vez de já
+  // cair direto no ícone de pokébola genérico, tentamos uma segunda URL
+  // (o artwork oficial, hospedado no mesmo repo mas em outro caminho)
+  // antes de desistir. Chamado via onerror="PokeAPI.handleSpriteError(this, id)".
+  // --------------------------------------------------------------------
+  function handleSpriteError(imgEl, id) {
+    if (!imgEl.dataset.retried) {
+      imgEl.dataset.retried = "1";
+      imgEl.src = officialArtworkUrl(id);
+    } else {
+      imgEl.src = PLACEHOLDER_SPRITE;
+    }
+  }
+
+  // --------------------------------------------------------------------
   // Traduções (a PokéAPI não tem português nos campos que usamos aqui)
   // --------------------------------------------------------------------
   const TYPE_PT = {
@@ -466,6 +483,7 @@
     officialArtworkUrl,
     simpleSpriteUrl,
     PLACEHOLDER_SPRITE,
+    handleSpriteError,
     TYPE_PT,
     TYPE_COLORS,
     COLOR_PT,
