@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PokéJogos — Pokédle &amp; Pokennection</title>
+<meta name="description" content="Dois jogos de adivinhação e agrupamento com Pokémon, sem limite diário de partidas." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e63946%22 stroke=%22%23222%22 stroke-width=%228%22/><path d=%22M5 50H95%22 stroke=%22%23222%22 stroke-width=%228%22/><circle cx=%2250%22 cy=%2250%22 r=%2216%22 fill=%22white%22 stroke=%22%23222%22 stroke-width=%228%22/></svg>" />
+<script>
+  // Aplica o tema salvo (ou a preferência do sistema) ANTES da página
+  // pintar, para não piscar tema errado por uma fração de segundo.
+  // theme.js (carregado a seguir) refaz essa mesma escolha com calma e
+  // monta o botão de troca de tema — este bloco aqui é só o "atalho".
+  (function () {
+    try {
+      var t = localStorage.getItem("pokegames.theme");
+      if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) t = "dark";
+      document.documentElement.setAttribute("data-theme", t || "light");
+    } catch (e) { /* ignore */ }
+  })();
+</script>
+<link rel="stylesheet" href="themes.css" />
+<link rel="stylesheet" href="styles.css" />
+<script src="theme.js" defer></script>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="index.html">
+    <span class="brand-badge" aria-hidden="true"></span>
+    PokéJogos
+  </a>
+  <nav class="nav-links" aria-label="Navegação principal">
+    <a href="index.html" class="active">Início</a>
+    <a href="pokedle.html">Pokédle</a>
+    <a href="pokennection.html">Pokennection</a>
+  </nav>
+  <div class="header-actions" id="header-actions"></div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h1>Dois jogos, Pokémon infinitos.</h1>
+    <p>
+      Adivinhe o Pokémon secreto no <strong>Pokédle</strong> ou agrupe 16 Pokémon
+      em 4 categorias escondidas no <strong>Pokennection</strong>. Jogue quantas
+      vezes quiser — não há limite diário por aqui.
+    </p>
+  </section>
+
+  <section class="game-grid" aria-label="Escolha um jogo">
+    <a class="game-card" href="pokedle.html">
+      <span class="emoji" aria-hidden="true">🔍</span>
+      <h2>Pokédle</h2>
+      <p>
+        Um Pokémon secreto é sorteado. Você tem 8 tentativas para descobrir
+        quem é, comparando tipo, geração, habitat, cor, estágio evolutivo,
+        altura e peso — cada atributo com sua própria cor de acerto.
+      </p>
+      <span class="cta">Jogar Pokédle →</span>
+    </a>
+
+    <a class="game-card" href="pokennection.html">
+      <span class="emoji" aria-hidden="true">🧩</span>
+      <h2>Pokennection</h2>
+      <p>
+        16 Pokémon, 4 categorias escondidas. Agrupe corretamente antes que
+        suas vidas acabem — cuidado com os Pokémon "armadilha" que parecem
+        se encaixar em mais de um grupo.
+      </p>
+      <span class="cta">Jogar Pokennection →</span>
+    </a>
+  </section>
+
+  <section class="mt-24" style="max-width:640px;margin-left:auto;margin-right:auto;text-align:center;">
+    <p class="text-muted">
+      Escolha o tema de sua preferência a qualquer momento pelo botão "Tema"
+      no topo da página — inclui uma opção amigável para daltônicos e outra
+      de alto contraste. Os dados de Pokémon vêm da
+      <a href="https://pokeapi.co" target="_blank" rel="noopener">PokéAPI</a>.
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  Projeto de fã, não afiliado à Nintendo, Game Freak ou Creatures Inc. Pokémon
+  e os nomes dos personagens são marcas registradas de seus respectivos donos.
+</footer>
+
+<script>
+  // theme.js foi carregado com "defer", então só termina de rodar depois
+  // que o documento é totalmente interpretado — por isso esperamos
+  // DOMContentLoaded antes de usar PokeTheme aqui.
+  document.addEventListener("DOMContentLoaded", function () {
+    PokeTheme.buildSwitcher(document.getElementById("header-actions"));
+  });
+</script>
+</body>
+</html>

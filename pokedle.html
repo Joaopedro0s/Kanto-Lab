@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pokédle — PokéJogos</title>
+<meta name="description" content="Adivinhe o Pokémon secreto em até 8 tentativas." />
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("pokegames.theme");
+      if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) t = "dark";
+      document.documentElement.setAttribute("data-theme", t || "light");
+    } catch (e) { /* ignore */ }
+  })();
+</script>
+<link rel="stylesheet" href="themes.css" />
+<link rel="stylesheet" href="styles.css" />
+<script src="theme.js" defer></script>
+<script src="sound.js" defer></script>
+<script src="pokeapi.js" defer></script>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="index.html">
+    <span class="brand-badge" aria-hidden="true"></span>
+    PokéJogos
+  </a>
+  <nav class="nav-links" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+    <a href="pokedle.html" class="active">Pokédle</a>
+    <a href="pokennection.html">Pokennection</a>
+  </nav>
+  <div class="header-actions" id="header-actions"></div>
+</header>
+
+<main class="container">
+  <h1 class="center" style="margin-top:36px;">🔍 Pokédle</h1>
+  <p class="center text-muted" style="max-width:560px;margin:0 auto 28px;">
+    Descubra o Pokémon secreto em até 8 tentativas. A cada palpite, cada
+    atributo recebe sua própria cor: verde (acerto), amarelo (parecido) ou
+    vermelho (diferente).
+  </p>
+
+  <!-- ---------- TELA DE SELEÇÃO DE DIFICULDADE ---------- -->
+  <section id="screen-difficulty" class="game-panel">
+    <h2 class="center" style="margin-top:0;">Escolha a dificuldade</h2>
+    <div class="difficulty-grid" id="difficulty-grid" role="radiogroup" aria-label="Dificuldade"></div>
+    <div class="center mt-16">
+      <button class="btn" id="btn-start-pokedle" disabled>Selecione uma dificuldade</button>
+    </div>
+  </section>
+
+  <!-- ---------- CARREGANDO ---------- -->
+  <section id="screen-loading" class="game-panel" style="display:none;">
+    <div class="loading-state">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Sorteando o Pokémon secreto e preparando a lista de candidatos…</p>
+    </div>
+  </section>
+
+  <!-- ---------- TELA DE JOGO ---------- -->
+  <section id="screen-game" class="game-panel" style="display:none;">
+    <div class="game-topbar">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="pill" id="pill-difficulty">Dificuldade</span>
+        <span class="pill" id="pill-pool">Candidatos</span>
+      </div>
+      <div class="attempts-remaining" id="attempts-remaining" aria-label="Tentativas restantes"></div>
+    </div>
+
+    <form class="guess-form" id="guess-form" autocomplete="off">
+      <div class="guess-input-wrap">
+        <label for="guess-input" class="visually-hidden">Nome do Pokémon</label>
+        <input type="text" id="guess-input" class="guess-input" placeholder="Digite o nome de um Pokémon…" />
+        <div class="autocomplete" id="autocomplete" style="display:none;" role="listbox"></div>
+      </div>
+      <button type="submit" class="btn">Chutar</button>
+      <button type="button" class="btn secondary" id="btn-open-list">Ver lista</button>
+    </form>
+
+    <div class="attempts-header" id="attempts-header"></div>
+    <div class="attempts-table" id="attempts-table"></div>
+  </section>
+
+  <div class="center mt-24">
+    <button class="btn ghost" id="btn-change-difficulty" style="display:none;">← Trocar dificuldade</button>
+  </div>
+</main>
+
+<!-- ---------- MODAL: lista visual de candidatos ---------- -->
+<div class="modal-backdrop" id="modal-list" style="display:none;">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-list-title">
+    <div class="modal-header">
+      <h2 id="modal-list-title">Pokémon disponíveis</h2>
+      <button class="modal-close" id="modal-list-close" aria-label="Fechar">✕</button>
+    </div>
+    <input type="text" id="modal-list-filter" class="guess-input" placeholder="Filtrar por nome…" style="margin-bottom:12px;" />
+    <div class="pokemon-grid" id="pokemon-grid"></div>
+  </div>
+</div>
+
+<!-- ---------- MODAL: fim de jogo ---------- -->
+<div class="modal-backdrop" id="modal-end" style="display:none;">
+  <div class="modal end-screen" role="dialog" aria-modal="true" aria-labelledby="modal-end-title">
+    <div class="result-emoji" id="end-emoji">🎉</div>
+    <h2 id="modal-end-title">Você acertou!</h2>
+    <p id="end-subtitle" class="text-muted"></p>
+    <div class="secret-reveal" id="secret-reveal"></div>
+    <div class="actions">
+      <button class="btn" id="btn-play-again">Jogar novamente</button>
+      <button class="btn secondary" id="btn-end-change-difficulty">Trocar dificuldade</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+<script src="pokedle.js" defer></script>
+</body>
+</html>

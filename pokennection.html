@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pokennection — PokéJogos</title>
+<meta name="description" content="Agrupe 16 Pokémon em 4 categorias escondidas antes que suas vidas acabem." />
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("pokegames.theme");
+      if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) t = "dark";
+      document.documentElement.setAttribute("data-theme", t || "light");
+    } catch (e) { /* ignore */ }
+  })();
+</script>
+<link rel="stylesheet" href="themes.css" />
+<link rel="stylesheet" href="styles.css" />
+<script src="theme.js" defer></script>
+<script src="sound.js" defer></script>
+<script src="pokeapi.js" defer></script>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="index.html">
+    <span class="brand-badge" aria-hidden="true"></span>
+    PokéJogos
+  </a>
+  <nav class="nav-links" aria-label="Navegação principal">
+    <a href="index.html">Início</a>
+    <a href="pokedle.html">Pokédle</a>
+    <a href="pokennection.html" class="active">Pokennection</a>
+  </nav>
+  <div class="header-actions" id="header-actions"></div>
+</header>
+
+<main class="container">
+  <h1 class="center" style="margin-top:36px;">🧩 Pokennection</h1>
+  <p class="center text-muted" style="max-width:580px;margin:0 auto 28px;">
+    16 Pokémon, 4 categorias escondidas. Selecione 4 que você acha que
+    pertencem ao mesmo grupo — a validação é imediata: acertou, o grupo
+    trava no lugar; errou, perde uma vida na hora.
+  </p>
+
+  <!-- ---------- TELA DE SELEÇÃO DE DIFICULDADE ---------- -->
+  <section id="screen-difficulty" class="game-panel">
+    <h2 class="center" style="margin-top:0;">Escolha a dificuldade</h2>
+    <div class="difficulty-grid" id="difficulty-grid" role="radiogroup" aria-label="Dificuldade"></div>
+    <div class="center mt-16">
+      <button class="btn" id="btn-start-connection" disabled>Selecione uma dificuldade</button>
+    </div>
+  </section>
+
+  <!-- ---------- CARREGANDO ---------- -->
+  <section id="screen-loading" class="game-panel" style="display:none;">
+    <div class="loading-state">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="loading-text">Montando categorias e sorteando os 16 Pokémon…</p>
+    </div>
+  </section>
+
+  <!-- ---------- TELA DE JOGO ---------- -->
+  <section id="screen-game" class="game-panel" style="display:none;">
+    <div class="game-topbar">
+      <span class="pill" id="pill-difficulty">Dificuldade</span>
+      <div class="lives-row" id="lives-row" aria-label="Vidas restantes"></div>
+    </div>
+
+    <div class="solved-groups" id="solved-groups"></div>
+    <div class="connection-grid" id="connection-grid"></div>
+
+    <p class="center text-muted" id="selection-hint">Selecione 4 Pokémon — a validação acontece assim que você escolhe o 4º.</p>
+    <div class="conn-actions">
+      <button class="btn secondary" id="btn-deselect" disabled>Limpar seleção</button>
+    </div>
+  </section>
+
+  <div class="center mt-24">
+    <button class="btn ghost" id="btn-change-difficulty" style="display:none;">← Trocar dificuldade</button>
+  </div>
+</main>
+
+<!-- ---------- MODAL: fim de jogo ---------- -->
+<div class="modal-backdrop" id="modal-end" style="display:none;">
+  <div class="modal end-screen" role="dialog" aria-modal="true" aria-labelledby="modal-end-title">
+    <div class="result-emoji" id="end-emoji">🎉</div>
+    <h2 id="modal-end-title">Você conectou tudo!</h2>
+    <p id="end-subtitle" class="text-muted"></p>
+    <div id="end-groups" class="solved-groups" style="text-align:left;"></div>
+    <div class="actions">
+      <button class="btn" id="btn-play-again">Jogar novamente</button>
+      <button class="btn secondary" id="btn-end-change-difficulty">Trocar dificuldade</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+<script src="pokennection.js" defer></script>
+</body>
+</html>
