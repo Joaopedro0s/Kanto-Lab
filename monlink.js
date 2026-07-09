@@ -1,6 +1,6 @@
 /* ==========================================================================
-   pokennection.js
-   Lógica do jogo Pokennection. Depende de pokeapi.js (window.PokeAPI),
+   monlink.js
+   Lógica do jogo MonLink. Depende de pokeapi.js (window.PokeAPI),
    theme.js (window.PokeTheme) e sound.js (window.PokeSound).
 
    Como o jogo é montado: cada partida sorteia 4 "categorias" (tipo,
@@ -241,7 +241,7 @@
   }
 
   async function generateBoard(difficultyKey) {
-    const diff = PokeAPI.DIFFICULTIES_POKENNECTION[difficultyKey];
+    const diff = PokeAPI.DIFFICULTIES_MONLINK[difficultyKey];
     for (let attempt = 0; attempt < 4; attempt++) {
       const categories = await buildCategories(diff);
       const board = assignMembers(categories, diff.trapOverlaps);
@@ -309,7 +309,7 @@
   // Tela de dificuldade
   // ------------------------------------------------------------------
   function renderDifficultyGrid() {
-    const diffs = Object.values(PokeAPI.DIFFICULTIES_POKENNECTION);
+    const diffs = Object.values(PokeAPI.DIFFICULTIES_MONLINK);
     el.difficultyGrid.innerHTML = "";
     diffs.forEach((d) => {
       const card = document.createElement("button");
@@ -357,7 +357,7 @@
   // ------------------------------------------------------------------
   async function startNewGame(difficultyKey) {
     state.difficultyKey = difficultyKey;
-    state.diff = PokeAPI.DIFFICULTIES_POKENNECTION[difficultyKey];
+    state.diff = PokeAPI.DIFFICULTIES_MONLINK[difficultyKey];
     state.lives = state.diff.lives;
     state.livesUsed = 0;
     state.solved = new Set();

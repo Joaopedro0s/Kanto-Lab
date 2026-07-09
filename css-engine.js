@@ -460,7 +460,7 @@ main > h1 {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ---------- Pokédle: busca ---------- */
+/* ---------- MonHunt: busca ---------- */
 .guess-form { position: relative; display: flex; gap: 10px; margin-bottom: 18px; }
 .guess-input-wrap { position: relative; flex: 1; }
 
@@ -504,7 +504,7 @@ main > h1 {
 .autocomplete button.highlighted { background: var(--bg-inset); }
 .autocomplete img { width: 32px; height: 32px; object-fit: contain; }
 
-/* ---------- Pokédle: grade de tentativas ---------- */
+/* ---------- MonHunt: grade de tentativas ---------- */
 .attempts-table { display: flex; flex-direction: column; gap: 8px; }
 
 .attempt-row {
@@ -712,7 +712,7 @@ main > h1 {
 }
 
 /* ==========================================================================
-   POKENNECTION
+   MONLINK
    ========================================================================== */
 
 .lives-row { display: flex; gap: 8px; align-items: center; }

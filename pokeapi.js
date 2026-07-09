@@ -1,7 +1,7 @@
 /* ==========================================================================
    pokeapi.js
    Módulo central de dados. TUDO que envolve a PokéAPI mora aqui, para que
-   pokedle.js e pokennection.js só precisem chamar funções prontas.
+   monhunt.js e monlink.js só precisem chamar funções prontas.
 
    Como não geramos um arquivo de dados fixo, os dois jogos buscam tudo
    direto da PokéAPI (https://pokeapi.co) em tempo real, no navegador do
@@ -79,7 +79,7 @@
   // --------------------------------------------------------------------
   // Fallback de sprite — a CDN do GitHub (raw.githubusercontent.com) às
   // vezes falha em requisições isoladas quando várias imagens são
-  // pedidas de uma vez (ex.: os 16 tiles do Pokennection). Em vez de já
+  // pedidas de uma vez (ex.: os 16 tiles do MonLink). Em vez de já
   // cair direto no ícone de pokébola genérico, tentamos uma segunda URL
   // (o artwork oficial, hospedado no mesmo repo mas em outro caminho)
   // antes de desistir. Chamado via onerror="PokeAPI.handleSpriteError(this, id)".
@@ -305,13 +305,13 @@
   }
 
   // --------------------------------------------------------------------
-  // Dificuldades — Pokédle
+  // Dificuldades — MonHunt
   // Cada nível define, ao mesmo tempo: gerações disponíveis, tamanho
   // máximo do grupo de candidatos daquela partida, quais atributos
   // entram na comparação, e a "margem de tolerância" usada para decidir
   // se altura/peso/geração contam como "parecido" (amarelo).
   // --------------------------------------------------------------------
-  const DIFFICULTIES_POKEDLE = {
+  const DIFFICULTIES_MONHUNT = {
     easy: {
       key: "easy", label: "Easy", pt: "Fácil",
       description: "Só Geração I, poucos candidatos, atributos simples.",
@@ -342,16 +342,16 @@
     },
   };
 
-  // Monta o grupo de candidatos de uma partida de Pokédle: busca as
+  // Monta o grupo de candidatos de uma partida de MonHunt: busca as
   // espécies das gerações da dificuldade e sorteia até maxCandidates.
-  async function buildPokedleCandidatePool(difficultyKey) {
-    const diff = DIFFICULTIES_POKEDLE[difficultyKey];
+  async function buildMonHuntCandidatePool(difficultyKey) {
+    const diff = DIFFICULTIES_MONHUNT[difficultyKey];
     const species = dedupeById(await getSpeciesForGenerations(diff.generations));
     return sample(species, diff.maxCandidates).sort((a, b) => a.id - b.id);
   }
 
   // --------------------------------------------------------------------
-  // Comparadores de atributo — usados pelo Pokédle a cada palpite.
+  // Comparadores de atributo — usados pelo MonHunt a cada palpite.
   // Cada comparador devolve { status: 'correct'|'close'|'wrong', text, arrow? }
   // --------------------------------------------------------------------
   function compareSet(guessArr, secretArr) {
@@ -435,9 +435,9 @@
   }
 
   // --------------------------------------------------------------------
-  // Dificuldades — Pokennection
+  // Dificuldades — MonLink
   // --------------------------------------------------------------------
-  const DIFFICULTIES_POKENNECTION = {
+  const DIFFICULTIES_MONLINK = {
     easy: { key: "easy", label: "Easy", pt: "Fácil", lives: 6, trapOverlaps: 0,
       generators: ["type", "generation"] },
     normal: { key: "normal", label: "Normal", pt: "Normal", lives: 5, trapOverlaps: 0,
@@ -503,9 +503,9 @@
     shuffle,
     sample,
     dedupeById,
-    DIFFICULTIES_POKEDLE,
-    DIFFICULTIES_POKENNECTION,
-    buildPokedleCandidatePool,
+    DIFFICULTIES_MONHUNT,
+    DIFFICULTIES_MONLINK,
+    buildMonHuntCandidatePool,
     compareAttribute,
     activeAttributesFor,
     curatedList,

@@ -1,8 +1,8 @@
 /* ==========================================================================
-   pokedle.js
-   Lógica do jogo Pokédle. Depende de pokeapi.js (window.PokeAPI),
+   monhunt.js
+   Lógica do jogo MonHunt. Depende de pokeapi.js (window.PokeAPI),
    theme.js (window.PokeTheme) e sound.js (window.PokeSound), carregados
-   antes deste arquivo em pokedle.html.
+   antes deste arquivo em monhunt.html.
    ========================================================================== */
 
 (function () {
@@ -30,7 +30,7 @@
     screenLoading: document.getElementById("screen-loading"),
     screenGame: document.getElementById("screen-game"),
     difficultyGrid: document.getElementById("difficulty-grid"),
-    btnStart: document.getElementById("btn-start-pokedle"),
+    btnStart: document.getElementById("btn-start-monhunt"),
     btnChangeDifficulty: document.getElementById("btn-change-difficulty"),
     pillDifficulty: document.getElementById("pill-difficulty"),
     pillPool: document.getElementById("pill-pool"),
@@ -72,7 +72,7 @@
   // Tela de dificuldade
   // ------------------------------------------------------------------
   function renderDifficultyGrid() {
-    const diffs = Object.values(PokeAPI.DIFFICULTIES_POKEDLE);
+    const diffs = Object.values(PokeAPI.DIFFICULTIES_MONHUNT);
     el.difficultyGrid.innerHTML = "";
     diffs.forEach((d) => {
       const card = document.createElement("button");
@@ -133,8 +133,8 @@
     el.btnChangeDifficulty.style.display = "";
 
     try {
-      const diff = PokeAPI.DIFFICULTIES_POKEDLE[difficultyKey];
-      const pool = await PokeAPI.buildPokedleCandidatePool(difficultyKey);
+      const diff = PokeAPI.DIFFICULTIES_MONHUNT[difficultyKey];
+      const pool = await PokeAPI.buildMonHuntCandidatePool(difficultyKey);
       state.candidatePool = pool;
 
       const secretStub = pool[Math.floor(Math.random() * pool.length)];
@@ -316,7 +316,7 @@
     }
     el.guessInput.disabled = false;
 
-    const diff = PokeAPI.DIFFICULTIES_POKEDLE[state.difficultyKey];
+    const diff = PokeAPI.DIFFICULTIES_MONHUNT[state.difficultyKey];
     const results = {};
     let correctCount = 0;
     state.activeAttributes.forEach((attr) => {
