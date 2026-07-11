@@ -278,7 +278,6 @@
     lives: 0,
     livesUsed: 0,
     solved: new Set(),
-    solvedOrder: [],
     selected: new Set(),
     gameOver: false,
   };
@@ -376,7 +375,6 @@
     state.lives = state.diff.lives;
     state.livesUsed = 0;
     state.solved = new Set();
-    state.solvedOrder = [];
     state.selected = new Set();
     state.gameOver = false;
 
@@ -421,8 +419,19 @@
     el.livesRow.appendChild(label);
   }
 
+  // Nó invisível (display:none, não participa do layout do grid) que
+  // serve só de referência: tudo que já foi resolvido é inserido sempre
+  // "antes" dele, então ele vai afundando naturalmente pro fim da zona
+  // já resolvida — sem precisar calcular índice/linha manualmente (o
+  // cálculo antigo quebrava depois da 1ª categoria virar uma barra
+  // única, porque ela passa a ocupar 1 posição no DOM em vez de 4).
+  let solvedAnchor = null;
+
   function renderGrid() {
     el.grid.innerHTML = "";
+    solvedAnchor = document.createElement("div");
+    solvedAnchor.style.display = "none";
+    el.grid.appendChild(solvedAnchor);
     state.board.forEach((item) => {
       const btn = document.createElement("button");
       btn.type = "button";
@@ -503,31 +512,30 @@
     state.solved.add(categoryIndex);
     const groupClass = GROUP_CLASSES[categoryIndex % GROUP_CLASSES.length];
     const cat = state.categories[categoryIndex];
-    const rowIndex = state.solvedOrder.length;
-    state.solvedOrder.push(categoryIndex);
 
-    animateGroupSolve(items, groupClass, cat, rowIndex);
+    animateGroupSolve(items, groupClass, cat);
 
     state.selected.clear();
     updateSelectionUI();
   }
 
   // Anima o grupo acertado: 1) desliza as 4 células até formarem uma
-  // linha contígua no topo (técnica FLIP — grava a posição antes de
-  // mover no DOM, depois anima do ponto antigo até o novo); 2) pinta as
-  // células com a cor do grupo com um "pop"; 3) funde as 4 em uma única
-  // barra colorida ocupando a linha toda, com o nome da categoria.
-  function animateGroupSolve(items, groupClass, cat, rowIndex) {
+  // linha contígua logo após a zona já resolvida (técnica FLIP — grava
+  // a posição antes de mover no DOM, depois anima do ponto antigo até o
+  // novo); 2) pinta as células com a cor do grupo com um "pop"; 3) funde
+  // as 4 em uma única barra colorida ocupando a linha toda, com o nome
+  // da categoria.
+  function animateGroupSolve(items, groupClass, cat) {
     const ids = items.map((it) => it.id);
     const tileEls = ids.map((id) => el.grid.querySelector('[data-id="' + id + '"]')).filter(Boolean);
     if (tileEls.length !== 4) return; // segurança: se algo não bateu, não quebra o jogo
 
     const firstRects = tileEls.map((t) => t.getBoundingClientRect());
 
-    // Move as 4 células para o bloco de posição que pertence à sua linha
-    // (linhas anteriores já resolvidas ficam intactas antes delas).
-    const insertBeforeEl = el.grid.children[rowIndex * 4] || null;
-    tileEls.forEach((t) => el.grid.insertBefore(t, insertBeforeEl));
+    // Move as 4 células pra logo antes do marcador — ele fica sempre
+    // "afundando" pro fim da zona já resolvida, então isso sempre
+    // encaixa certo, não importa quantas categorias já viraram barra.
+    tileEls.forEach((t) => el.grid.insertBefore(t, solvedAnchor));
 
     requestAnimationFrame(() => {
       tileEls.forEach((t, i) => {
