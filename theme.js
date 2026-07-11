@@ -12,9 +12,9 @@
   const STORAGE_KEY = "pokegames.theme";
 
   const THEMES = [
-    { id: "light", label: "Claro", swatch: "#f4f6fb" },
-    { id: "dark", label: "Escuro", swatch: "#1c1e2b" },
-    { id: "colorblind", label: "Amigável p/ daltônicos", swatch: "#005fa3" },
+    { id: "light", label: "Claro", swatch: "#E3350D" },
+    { id: "dark", label: "Escuro", swatch: "#FFCB05" },
+    { id: "colorblind", label: "Amigável p/ daltônicos", swatch: "#2B6CB0" },
     { id: "high-contrast", label: "Alto contraste", swatch: "#ffd400" },
   ];
 

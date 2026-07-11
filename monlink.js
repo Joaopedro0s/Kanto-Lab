@@ -25,7 +25,6 @@
 
   const ALL_TYPES = Object.keys(PokeAPI.TYPE_PT);
   const ALL_COLORS = Object.keys(PokeAPI.COLOR_PT);
-  const ALL_HABITATS = Object.keys(PokeAPI.HABITAT_PT);
   const ALL_GENS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   const GROUP_CLASSES = ["group-1", "group-2", "group-3", "group-4"];
@@ -67,16 +66,6 @@
     return null;
   }
 
-  async function genHabitat(usedKeys) {
-    for (const h of PokeAPI.shuffle(ALL_HABITATS)) {
-      const key = "habitat:" + h;
-      if (usedKeys.has(key)) continue;
-      const pool = await PokeAPI.getHabitatMembers(h);
-      if (pool.length >= 4) return { key, title: "Habitat: " + PokeAPI.HABITAT_PT[h], pool };
-    }
-    return null;
-  }
-
   async function genStarter(usedKeys) {
     const options = [
       ["starterGrass", "Iniciantes do tipo Planta"],
@@ -113,9 +102,17 @@
     return pool.length >= 4 ? { key, title: "Lendários e Míticos", pool } : null;
   }
 
+  let allSpeciesFlatCache = null;
+  async function getAllSpeciesFlat() {
+    if (!allSpeciesFlatCache) {
+      allSpeciesFlatCache = PokeAPI.dedupeById(await PokeAPI.getSpeciesForGenerations(ALL_GENS));
+    }
+    return allSpeciesFlatCache;
+  }
+
   async function getAllSpeciesByLetter() {
     if (allSpeciesByLetterCache) return allSpeciesByLetterCache;
-    const all = PokeAPI.dedupeById(await PokeAPI.getSpeciesForGenerations(ALL_GENS));
+    const all = await getAllSpeciesFlat();
     const byLetter = new Map();
     all.forEach((p) => {
       const letter = p.name.charAt(0);
@@ -137,28 +134,39 @@
     return null;
   }
 
-  function weightBucket(kg) {
-    if (kg < 10) return "leve";
-    if (kg <= 60) return "medio";
-    return "pesado";
-  }
-  const WEIGHT_LABEL = {
-    leve: "Peso pena (menos de 10 kg)",
-    medio: "Peso médio (10 a 60 kg)",
-    pesado: "Peso pesado (mais de 60 kg)",
-  };
+  const EFFECT_BUCKETS = [
+    { key: "4x", mult: 4, title: (t) => "Toma 4x de " + PokeAPI.TYPE_PT[t] },
+    { key: "2x", mult: 2, title: (t) => "Toma 2x de " + PokeAPI.TYPE_PT[t] },
+    { key: "0.5x", mult: 0.5, title: (t) => "Toma 0.5x de " + PokeAPI.TYPE_PT[t] },
+    { key: "0.25x", mult: 0.25, title: (t) => "Toma 0.25x de " + PokeAPI.TYPE_PT[t] },
+    { key: "0x", mult: 0, title: (t) => "Não é afetado por " + PokeAPI.TYPE_PT[t] },
+  ];
 
-  async function genWeightClass(usedKeys) {
-    for (const gen of PokeAPI.shuffle(ALL_GENS)) {
-      const species = await PokeAPI.getGenerationSpecies(gen);
-      const sample = PokeAPI.sample(species, 20);
-      const fulls = await Promise.all(sample.map((p) => PokeAPI.getPokemonFull(p.id).catch(() => null)));
-      const buckets = { leve: [], medio: [], pesado: [] };
-      fulls.filter(Boolean).forEach((p) => buckets[weightBucket(p.weightKg)].push({ id: p.id, name: p.name }));
-      for (const bucket of PokeAPI.shuffle(["leve", "medio", "pesado"])) {
-        const key = "weight:" + bucket;
-        if (usedKeys.has(key) || buckets[bucket].length < 4) continue;
-        return { key, title: WEIGHT_LABEL[bucket], pool: buckets[bucket] };
+  function effectBucketKeyFor(mult) {
+    const found = EFFECT_BUCKETS.find((b) => b.mult === mult);
+    return found ? found.key : null;
+  }
+
+  // Sorteia um tipo atacante e busca, numa amostra de Pokémon (que pode
+  // ter tipo duplo), quantos tomam exatamente 4x/2x/0.5x/0.25x ou não
+  // são afetados por aquele tipo — combinando os multiplicadores dos
+  // dois tipos do Pokémon quando aplicável (ex: Scizor Aço/Inseto toma
+  // 4x de Fogo porque os dois tipos são fracos contra Fogo).
+  async function genTypeEffectiveness(usedKeys) {
+    const allSpecies = await getAllSpeciesFlat();
+    for (const atk of PokeAPI.shuffle(ALL_TYPES)) {
+      const sampleList = PokeAPI.sample(allSpecies, 90);
+      const fulls = await Promise.all(sampleList.map((p) => PokeAPI.getPokemonFull(p.id).catch(() => null)));
+      const buckets = { "4x": [], "2x": [], "0.5x": [], "0.25x": [], "0x": [] };
+      fulls.filter(Boolean).forEach((p) => {
+        const mult = PokeAPI.typeEffectivenessMultiplier(atk, p.types);
+        const bucketKey = effectBucketKeyFor(mult);
+        if (bucketKey) buckets[bucketKey].push({ id: p.id, name: p.name });
+      });
+      for (const bucket of PokeAPI.shuffle(EFFECT_BUCKETS)) {
+        const key = "typeEffect:" + atk + ":" + bucket.key;
+        if (usedKeys.has(key) || buckets[bucket.key].length < 4) continue;
+        return { key, title: bucket.title(atk), pool: buckets[bucket.key] };
       }
     }
     return null;
@@ -168,13 +176,12 @@
     type: genType,
     generation: genGeneration,
     color: genColor,
-    habitat: genHabitat,
+    typeEffect: genTypeEffectiveness,
     starter: genStarter,
     eeveelutions: genEeveelutions,
     pseudo: genPseudo,
     legendary: genLegendary,
     letter: genLetter,
-    weightClass: genWeightClass,
   };
 
   // ------------------------------------------------------------------
@@ -271,6 +278,7 @@
     lives: 0,
     livesUsed: 0,
     solved: new Set(),
+    solvedOrder: [],
     selected: new Set(),
     gameOver: false,
   };
@@ -285,7 +293,6 @@
     btnChangeDifficulty: document.getElementById("btn-change-difficulty"),
     pillDifficulty: document.getElementById("pill-difficulty"),
     livesRow: document.getElementById("lives-row"),
-    solvedGroups: document.getElementById("solved-groups"),
     grid: document.getElementById("connection-grid"),
     btnDeselect: document.getElementById("btn-deselect"),
     selectionHint: document.getElementById("selection-hint"),
@@ -369,6 +376,7 @@
     state.lives = state.diff.lives;
     state.livesUsed = 0;
     state.solved = new Set();
+    state.solvedOrder = [];
     state.selected = new Set();
     state.gameOver = false;
 
@@ -385,7 +393,6 @@
 
       el.pillDifficulty.textContent = state.diff.pt + " · " + state.diff.label;
       renderLives();
-      el.solvedGroups.innerHTML = "";
       renderGrid();
       updateSelectionUI();
 
@@ -496,35 +503,91 @@
     state.solved.add(categoryIndex);
     const groupClass = GROUP_CLASSES[categoryIndex % GROUP_CLASSES.length];
     const cat = state.categories[categoryIndex];
+    const rowIndex = state.solvedOrder.length;
+    state.solvedOrder.push(categoryIndex);
 
-    items.forEach((item) => {
-      const btn = el.grid.querySelector('[data-id="' + item.id + '"]');
-      if (btn) {
-        btn.classList.add("solved");
-        btn.classList.remove("selected");
-        btn.style.background = "var(--" + groupClass + "-bg)";
-        btn.style.color = "var(--" + groupClass + "-text)";
-        btn.style.borderColor = "transparent";
-        btn.disabled = true;
-      }
-    });
-
-    const banner = document.createElement("div");
-    banner.className = "solved-group";
-    banner.style.background = "var(--" + groupClass + "-bg)";
-    banner.style.color = "var(--" + groupClass + "-text)";
-    banner.innerHTML =
-      '<span class="group-title">' + cat.title + "</span>" +
-      '<span class="group-members">' + items.map((i) => capitalize(i.name)).join(", ") + "</span>";
-    el.solvedGroups.appendChild(banner);
+    animateGroupSolve(items, groupClass, cat, rowIndex);
 
     state.selected.clear();
     updateSelectionUI();
+  }
 
-    if (state.solved.size === 4) {
-      state.gameOver = true;
-      setTimeout(() => showEndScreen(true), 500);
-    }
+  // Anima o grupo acertado: 1) desliza as 4 células até formarem uma
+  // linha contígua no topo (técnica FLIP — grava a posição antes de
+  // mover no DOM, depois anima do ponto antigo até o novo); 2) pinta as
+  // células com a cor do grupo com um "pop"; 3) funde as 4 em uma única
+  // barra colorida ocupando a linha toda, com o nome da categoria.
+  function animateGroupSolve(items, groupClass, cat, rowIndex) {
+    const ids = items.map((it) => it.id);
+    const tileEls = ids.map((id) => el.grid.querySelector('[data-id="' + id + '"]')).filter(Boolean);
+    if (tileEls.length !== 4) return; // segurança: se algo não bateu, não quebra o jogo
+
+    const firstRects = tileEls.map((t) => t.getBoundingClientRect());
+
+    // Move as 4 células para o bloco de posição que pertence à sua linha
+    // (linhas anteriores já resolvidas ficam intactas antes delas).
+    const insertBeforeEl = el.grid.children[rowIndex * 4] || null;
+    tileEls.forEach((t) => el.grid.insertBefore(t, insertBeforeEl));
+
+    requestAnimationFrame(() => {
+      tileEls.forEach((t, i) => {
+        const last = t.getBoundingClientRect();
+        const dx = firstRects[i].left - last.left;
+        const dy = firstRects[i].top - last.top;
+        t.style.transition = "none";
+        t.style.transform = "translate(" + dx + "px, " + dy + "px)";
+      });
+      requestAnimationFrame(() => {
+        tileEls.forEach((t) => {
+          t.style.transition = "transform .42s cubic-bezier(.22,.9,.3,1.1)";
+          t.style.transform = "";
+        });
+      });
+    });
+
+    setTimeout(() => {
+      tileEls.forEach((t) => {
+        t.classList.add("solved", "solve-pop");
+        t.style.background = "var(--" + groupClass + "-bg)";
+        t.style.color = "var(--" + groupClass + "-text)";
+        t.style.borderColor = "transparent";
+        t.disabled = true;
+        t.style.transition = "";
+        t.style.transform = "";
+      });
+      PokeSound.click();
+    }, 440);
+
+    setTimeout(() => {
+      mergeIntoBanner(tileEls, groupClass, cat);
+      if (state.solved.size === 4) {
+        state.gameOver = true;
+        setTimeout(() => showEndScreen(true), 550);
+      }
+    }, 880);
+  }
+
+  // Substitui as 4 células individuais por uma única barra colorida que
+  // ocupa a linha inteira, mostrando o nome da categoria e os 4 Pokémon
+  // lado a lado — como uma "linha conectada".
+  function mergeIntoBanner(tileEls, groupClass, cat) {
+    const anchor = tileEls[0];
+    if (!anchor || !anchor.parentNode) return;
+
+    const banner = document.createElement("div");
+    banner.className = "conn-row-merged";
+    banner.style.background = "var(--" + groupClass + "-bg)";
+    banner.style.color = "var(--" + groupClass + "-text)";
+    banner.innerHTML =
+      '<span class="merged-title">' + cat.title + "</span>" +
+      '<div class="merged-members">' +
+      tileEls.map((t) => '<div class="merged-member">' + t.innerHTML + "</div>").join("") +
+      "</div>";
+
+    anchor.parentNode.insertBefore(banner, anchor);
+    tileEls.forEach((t) => t.remove());
+
+    requestAnimationFrame(() => banner.classList.add("in"));
   }
 
   function failSelection(ids) {

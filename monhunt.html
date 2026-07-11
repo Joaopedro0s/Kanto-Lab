@@ -1,129 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MonHunt — MonJogos</title>
-<meta name="description" content="Adivinhe o Pokémon secreto em até 8 tentativas." />
-<script>
-  (function () {
-    try {
-      var t = localStorage.getItem("pokegames.theme");
-      if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) t = "dark";
-      document.documentElement.setAttribute("data-theme", t || "light");
-    } catch (e) { /* ignore */ }
-  })();
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" />
-<!-- CSS-in-JS: ver comentário em index.html -->
-<script src="theme-tokens.js"></script>
-<script src="css-engine.js"></script>
-<script>
-  PokeStyles.setTheme(document.documentElement.getAttribute("data-theme") || "light");
-</script>
-<script src="theme.js" defer></script>
-<script src="sound.js" defer></script>
-<script src="pokeapi.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MonHunt — MonJogos</title>
+  <meta name="description" content="Adivinhe o Pokémon secreto em até 8 tentativas." />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("pokegames.theme");
+        if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) t = "dark";
+        document.documentElement.setAttribute("data-theme", t || "light");
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" />
+  <!-- CSS-in-JS: ver comentário em index.html -->
+  <script src="theme-tokens.js"></script>
+  <script src="css-engine.js"></script>
+  <script>
+    PokeStyles.setTheme(document.documentElement.getAttribute("data-theme") || "light");
+  </script>
+  <script src="theme.js" defer></script>
+  <script src="sound.js" defer></script>
+  <script src="pokeapi.js" defer></script>
 </head>
+
 <body>
 
-<header class="site-header">
-  <a class="brand" href="index.html">
-    <span class="brand-badge" aria-hidden="true"></span>
-    MonJogos
-  </a>
-  <nav class="nav-links" aria-label="Navegação principal">
-    <a href="index.html">Início</a>
-    <a href="monhunt.html" class="active">MonHunt</a>
-    <a href="monlink.html">MonLink</a>
-  </nav>
-  <div class="header-actions" id="header-actions"></div>
-</header>
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <span class="brand-badge" aria-hidden="true"></span>
+      MonJogos
+    </a>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="monhunt.html" class="active">MonHunt</a>
+      <a href="monlink.html">MonLink</a>
+    </nav>
+    <div class="header-actions" id="header-actions"></div>
+  </header>
 
-<main class="container">
-  <h1 class="center" style="margin-top:36px;"><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.3" y2="15.3"/></svg></span> MonHunt</h1>
-  <p class="center text-muted" style="max-width:560px;margin:0 auto 28px;">
-    Descubra o Pokémon secreto em até 8 tentativas. A cada palpite, cada
-    atributo recebe sua própria cor: verde (acerto), amarelo (parecido) ou
-    vermelho (diferente).
-  </p>
+  <main class="container">
+    <h1 class="center" style="margin-top:36px;"><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10.5" cy="10.5" r="6.5" />
+          <line x1="20" y1="20" x2="15.3" y2="15.3" />
+        </svg></span> MonHunt</h1>
+    <p class="center text-muted" style="max-width:560px;margin:0 auto 28px;">
+      Descubra o Pokémon secreto em até 8 tentativas. A cada palpite, cada
+      atributo recebe seu próprio status: verde (acerto), laranja (parecido) ou
+      vermelho (diferente).
+    </p>
 
-  <!-- ---------- TELA DE SELEÇÃO DE DIFICULDADE ---------- -->
-  <section id="screen-difficulty" class="game-panel">
-    <h2 class="center" style="margin-top:0;">Escolha a dificuldade</h2>
-    <div class="difficulty-grid" id="difficulty-grid" role="radiogroup" aria-label="Dificuldade"></div>
-    <div class="center mt-16">
-      <button class="btn" id="btn-start-monhunt" disabled>Selecione uma dificuldade</button>
-    </div>
-  </section>
-
-  <!-- ---------- CARREGANDO ---------- -->
-  <section id="screen-loading" class="game-panel" style="display:none;">
-    <div class="loading-state">
-      <div class="spinner" aria-hidden="true"></div>
-      <p>Sorteando o Pokémon secreto e preparando a lista de candidatos…</p>
-    </div>
-  </section>
-
-  <!-- ---------- TELA DE JOGO ---------- -->
-  <section id="screen-game" class="game-panel" style="display:none;">
-    <div class="game-topbar">
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <span class="pill" id="pill-difficulty">Dificuldade</span>
-        <span class="pill" id="pill-pool">Candidatos</span>
+    <!-- ---------- TELA DE SELEÇÃO DE DIFICULDADE ---------- -->
+    <section id="screen-difficulty" class="game-panel">
+      <h2 class="center" style="margin-top:0;">Escolha a dificuldade</h2>
+      <div class="difficulty-grid" id="difficulty-grid" role="radiogroup" aria-label="Dificuldade"></div>
+      <div class="center mt-16">
+        <button class="btn" id="btn-start-monhunt" disabled>Selecione uma dificuldade</button>
       </div>
-      <div class="attempts-remaining" id="attempts-remaining" aria-label="Tentativas restantes"></div>
-    </div>
+    </section>
 
-    <form class="guess-form" id="guess-form" autocomplete="off">
-      <div class="guess-input-wrap">
-        <label for="guess-input" class="visually-hidden">Nome do Pokémon</label>
-        <input type="text" id="guess-input" class="guess-input" placeholder="Digite o nome de um Pokémon…" />
+    <!-- ---------- CARREGANDO ---------- -->
+    <section id="screen-loading" class="game-panel" style="display:none;">
+      <div class="loading-state">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Sorteando o Pokémon secreto e preparando a lista de candidatos…</p>
+      </div>
+    </section>
+
+    <!-- ---------- TELA DE JOGO ---------- -->
+    <section id="screen-game" class="game-panel" style="display:none;">
+      <div class="game-topbar">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="pill" id="pill-difficulty">Dificuldade</span>
+          <span class="pill" id="pill-pool">Candidatos</span>
+        </div>
+        <div class="attempts-remaining" id="attempts-remaining" aria-label="Tentativas restantes"></div>
+      </div>
+
+      <form class="guess-form" id="guess-form" autocomplete="off">
+        <div class="guess-input-wrap">
+          <label for="guess-input" class="visually-hidden">Nome do Pokémon</label>
+          <input type="text" id="guess-input" class="guess-input" placeholder="Digite o nome de um Pokémon…" />
+        </div>
+        <button type="submit" class="btn">Chutar</button>
+        <button type="button" class="btn secondary" id="btn-open-list">Ver lista</button>
         <div class="autocomplete" id="autocomplete" style="display:none;" role="listbox"></div>
+      </form>
+
+      <div class="status-legend" aria-label="Legenda de status">
+        <span class="legend-item correct"><span class="legend-dot">✓</span> Acertou</span>
+        <span class="legend-item close"><span class="legend-dot">≈</span> Perto</span>
+        <span class="legend-item wrong"><span class="legend-dot">✕</span> Diferente</span>
       </div>
-      <button type="submit" class="btn">Chutar</button>
-      <button type="button" class="btn secondary" id="btn-open-list">Ver lista</button>
-    </form>
 
-    <div class="attempts-header" id="attempts-header"></div>
-    <div class="attempts-table" id="attempts-table"></div>
-  </section>
+      <div class="attempts-header" id="attempts-header"></div>
+      <div class="attempts-table" id="attempts-table"></div>
+    </section>
 
-  <div class="center mt-24">
-    <button class="btn ghost" id="btn-change-difficulty" style="display:none;">← Trocar dificuldade</button>
-  </div>
-</main>
-
-<!-- ---------- MODAL: lista visual de candidatos ---------- -->
-<div class="modal-backdrop" id="modal-list" style="display:none;">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-list-title">
-    <div class="modal-header">
-      <h2 id="modal-list-title">Pokémon disponíveis</h2>
-      <button class="modal-close" id="modal-list-close" aria-label="Fechar">✕</button>
+    <div class="center mt-24">
+      <button class="btn ghost" id="btn-change-difficulty" style="display:none;">← Trocar dificuldade</button>
     </div>
-    <input type="text" id="modal-list-filter" class="guess-input" placeholder="Filtrar por nome…" style="margin-bottom:12px;" />
-    <div class="pokemon-grid" id="pokemon-grid"></div>
-  </div>
-</div>
+  </main>
 
-<!-- ---------- MODAL: fim de jogo ---------- -->
-<div class="modal-backdrop" id="modal-end" style="display:none;">
-  <div class="modal end-screen" role="dialog" aria-modal="true" aria-labelledby="modal-end-title">
-    <div class="result-icon" id="end-emoji"></div>
-    <h2 id="modal-end-title">Você acertou!</h2>
-    <p id="end-subtitle" class="text-muted"></p>
-    <div class="secret-reveal" id="secret-reveal"></div>
-    <div class="actions">
-      <button class="btn" id="btn-play-again">Jogar novamente</button>
-      <button class="btn secondary" id="btn-end-change-difficulty">Trocar dificuldade</button>
+  <!-- ---------- MODAL: lista visual de candidatos ---------- -->
+  <div class="modal-backdrop" id="modal-list" style="display:none;">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-list-title">
+      <div class="modal-header">
+        <h2 id="modal-list-title">Pokémon disponíveis</h2>
+        <button class="modal-close" id="modal-list-close" aria-label="Fechar">✕</button>
+      </div>
+      <input type="text" id="modal-list-filter" class="guess-input" placeholder="Filtrar por nome…"
+        style="margin-bottom:12px;" />
+      <div class="pokemon-grid" id="pokemon-grid"></div>
     </div>
   </div>
-</div>
 
-<div class="toast-region" id="toast-region" aria-live="polite"></div>
+  <!-- ---------- MODAL: fim de jogo ---------- -->
+  <div class="modal-backdrop" id="modal-end" style="display:none;">
+    <div class="modal end-screen" role="dialog" aria-modal="true" aria-labelledby="modal-end-title">
+      <div class="result-icon" id="end-emoji"></div>
+      <h2 id="modal-end-title">Você acertou!</h2>
+      <p id="end-subtitle" class="text-muted"></p>
+      <div class="secret-reveal" id="secret-reveal"></div>
+      <div class="actions">
+        <button class="btn" id="btn-play-again">Jogar novamente</button>
+        <button class="btn secondary" id="btn-end-change-difficulty">Trocar dificuldade</button>
+      </div>
+    </div>
+  </div>
 
-<script src="monhunt.js" defer></script>
+  <div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+  <script src="monhunt.js" defer></script>
 </body>
+
 </html>

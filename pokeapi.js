@@ -133,11 +133,41 @@
     green: "#4caf50", pink: "#f48fb1", purple: "#9b59b6", red: "#e74c3c",
     white: "#f2f2f2", yellow: "#f5d13d",
   };
-  const COLOR_FAMILY = {
-    red: "quente", pink: "quente", yellow: "quente", brown: "quente",
-    blue: "frio", green: "frio", purple: "frio",
-    black: "neutro", white: "neutro", gray: "neutro",
+
+  // --------------------------------------------------------------------
+  // Tabela de efetividade de tipos (atacante -> defensores, só os
+  // multiplicadores que não são 1x). Usada pelo MonLink nas categorias
+  // do tipo "toma 4x de Fogo" — quando o Pokémon é de tipo duplo,
+  // multiplicamos os dois valores (ex: Scizor Aço/Inseto toma 2x de Aço
+  // vira 4x de Fogo porque Inseto também toma 2x).
+  // --------------------------------------------------------------------
+  const TYPE_CHART = {
+    normal: { rock: 0.5, ghost: 0, steel: 0.5 },
+    fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
+    water: { fire: 2, water: 0.5, grass: 0.5, ground: 2, rock: 2, dragon: 0.5 },
+    electric: { water: 2, electric: 0.5, grass: 0.5, ground: 0, flying: 2, dragon: 0.5 },
+    grass: { fire: 0.5, water: 2, grass: 0.5, poison: 0.5, ground: 2, flying: 0.5, bug: 0.5, rock: 2, dragon: 0.5, steel: 0.5 },
+    ice: { fire: 0.5, water: 0.5, grass: 2, ice: 0.5, ground: 2, flying: 2, dragon: 2, steel: 0.5 },
+    fighting: { normal: 2, ice: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, rock: 2, ghost: 0, dark: 2, steel: 2, fairy: 0.5 },
+    poison: { grass: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0, fairy: 2 },
+    ground: { fire: 2, electric: 2, grass: 0.5, poison: 2, flying: 0, bug: 0.5, rock: 2, steel: 2 },
+    flying: { electric: 0.5, grass: 2, fighting: 2, bug: 2, rock: 0.5, steel: 0.5 },
+    psychic: { fighting: 2, poison: 2, psychic: 0.5, dark: 0, steel: 0.5 },
+    bug: { fire: 0.5, grass: 2, fighting: 0.5, poison: 0.5, flying: 0.5, psychic: 2, ghost: 0.5, dark: 2, steel: 0.5, fairy: 0.5 },
+    rock: { fire: 2, ice: 2, fighting: 0.5, ground: 0.5, flying: 2, bug: 2, steel: 0.5 },
+    ghost: { normal: 0, psychic: 2, ghost: 2, dark: 0.5 },
+    dragon: { dragon: 2, steel: 0.5, fairy: 0 },
+    dark: { fighting: 0.5, psychic: 2, ghost: 2, dark: 0.5, fairy: 0.5 },
+    steel: { fire: 0.5, water: 0.5, electric: 0.5, ice: 2, rock: 2, steel: 0.5, fairy: 2 },
+    fairy: { fire: 0.5, fighting: 2, poison: 0.5, dragon: 2, dark: 2, steel: 0.5 },
   };
+
+  function typeEffectivenessMultiplier(attackType, defenderTypes) {
+    const row = TYPE_CHART[attackType] || {};
+    return defenderTypes.reduce((mult, defType) => mult * (defType in row ? row[defType] : 1), 1);
+  }
+
+
 
   const HABITAT_PT = {
     cave: "Caverna", forest: "Floresta", grassland: "Campo", mountain: "Montanha",
@@ -325,40 +355,43 @@
   const DIFFICULTIES_MONHUNT = {
     easy: {
       key: "easy", label: "Easy", pt: "Fácil",
-      description: "Só Geração I, poucos candidatos, atributos simples.",
-      generations: [1], maxCandidates: 50,
+      description: "Só Geração I · todos os 151 Pokémon disponíveis · atributos simples.",
+      generations: [1],
       attributes: ["type", "generation", "color", "stage"],
       numericBand: 0.35, genCloseDiff: 2,
     },
     normal: {
       key: "normal", label: "Normal", pt: "Normal",
-      description: "Gerações I a III, mais candidatos, inclui habitat.",
-      generations: [1, 2, 3], maxCandidates: 120,
+      description: "Gerações I a III · todos os ~386 Pokémon disponíveis · inclui habitat.",
+      generations: [1, 2, 3],
       attributes: ["type", "generation", "color", "stage", "habitat"],
       numericBand: 0.28, genCloseDiff: 1,
     },
     hard: {
       key: "hard", label: "Hard", pt: "Difícil",
-      description: "Gerações I a VI, inclui altura na comparação.",
-      generations: [1, 2, 3, 4, 5, 6], maxCandidates: 250,
+      description: "Gerações I a VI · todos os ~721 Pokémon disponíveis · inclui altura.",
+      generations: [1, 2, 3, 4, 5, 6],
       attributes: ["type", "generation", "color", "stage", "habitat", "height"],
       numericBand: 0.2, genCloseDiff: 1,
     },
     hardcore: {
       key: "hardcore", label: "Hardcore", pt: "Hardcore",
-      description: "Todas as gerações (I a IX), todos os atributos, tolerância mínima.",
-      generations: [1, 2, 3, 4, 5, 6, 7, 8, 9], maxCandidates: 500,
+      description: "Todas as gerações (I a IX) · todos os ~1010 Pokémon · tolerância mínima.",
+      generations: [1, 2, 3, 4, 5, 6, 7, 8, 9],
       attributes: ["type", "generation", "color", "stage", "habitat", "height", "weight"],
       numericBand: 0.12, genCloseDiff: 1,
     },
   };
 
+
   // Monta o grupo de candidatos de uma partida de MonHunt: busca as
-  // espécies das gerações da dificuldade e sorteia até maxCandidates.
+  // espécies das gerações da dificuldade e retorna TODOS os Pokémon
+  // disponíveis (sem limite de sampling — todos os Pokémon da(s)
+  // geração(ões) ficam acessíveis).
   async function buildMonHuntCandidatePool(difficultyKey) {
     const diff = DIFFICULTIES_MONHUNT[difficultyKey];
     const species = dedupeById(await getSpeciesForGenerations(diff.generations));
-    return sample(species, diff.maxCandidates).sort((a, b) => a.id - b.id);
+    return species.sort((a, b) => a.id - b.id);
   }
 
   // --------------------------------------------------------------------
@@ -406,9 +439,8 @@
         return { status, text: "Ger. " + guess.generation, arrow };
       }
       case "color": {
-        if (guess.color === secret.color) return { status: "correct", text: COLOR_PT[guess.color] || guess.color };
-        const same = guess.color && secret.color && COLOR_FAMILY[guess.color] === COLOR_FAMILY[secret.color];
-        return { status: same ? "close" : "wrong", text: COLOR_PT[guess.color] || guess.color };
+        const status = guess.color === secret.color ? "correct" : "wrong";
+        return { status, text: COLOR_PT[guess.color] || guess.color };
       }
       case "stage": {
         if (guess.stage === secret.stage) return { status: "correct", text: STAGE_LABEL[guess.stage] || guess.stage };
@@ -449,14 +481,22 @@
   // Dificuldades — MonLink
   // --------------------------------------------------------------------
   const DIFFICULTIES_MONLINK = {
-    easy: { key: "easy", label: "Easy", pt: "Fácil", lives: 6, trapOverlaps: 0,
-      generators: ["type", "generation"] },
-    normal: { key: "normal", label: "Normal", pt: "Normal", lives: 5, trapOverlaps: 0,
-      generators: ["type", "generation", "color", "habitat"] },
-    hard: { key: "hard", label: "Hard", pt: "Difícil", lives: 4, trapOverlaps: 1,
-      generators: ["type", "generation", "color", "habitat", "starter", "eeveelutions", "legendary", "letter"] },
-    hardcore: { key: "hardcore", label: "Hardcore", pt: "Hardcore", lives: 3, trapOverlaps: 2,
-      generators: ["type", "generation", "color", "habitat", "starter", "eeveelutions", "legendary", "pseudo", "letter", "weightClass"] },
+    easy: {
+      key: "easy", label: "Easy", pt: "Fácil", lives: 6, trapOverlaps: 0,
+      generators: ["type", "generation"]
+    },
+    normal: {
+      key: "normal", label: "Normal", pt: "Normal", lives: 5, trapOverlaps: 0,
+      generators: ["type", "generation", "color", "typeEffect"]
+    },
+    hard: {
+      key: "hard", label: "Hard", pt: "Difícil", lives: 4, trapOverlaps: 1,
+      generators: ["type", "generation", "color", "typeEffect", "starter", "eeveelutions", "legendary", "letter"]
+    },
+    hardcore: {
+      key: "hardcore", label: "Hardcore", pt: "Hardcore", lives: 3, trapOverlaps: 2,
+      generators: ["type", "generation", "color", "typeEffect", "starter", "eeveelutions", "legendary", "pseudo", "letter"]
+    },
   };
 
   // Listas curadas (não dependem de requisições extras, garantem
@@ -497,6 +537,8 @@
     handleSpriteError,
     TYPE_PT,
     TYPE_COLORS,
+    TYPE_CHART,
+    typeEffectivenessMultiplier,
     COLOR_PT,
     COLOR_SWATCH,
     HABITAT_PT,

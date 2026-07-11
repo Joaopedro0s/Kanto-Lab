@@ -1,109 +1,117 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MonLink — MonJogos</title>
-<meta name="description" content="Agrupe 16 Pokémon em 4 categorias escondidas antes que suas vidas acabem." />
-<script>
-  (function () {
-    try {
-      var t = localStorage.getItem("pokegames.theme");
-      if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) t = "dark";
-      document.documentElement.setAttribute("data-theme", t || "light");
-    } catch (e) { /* ignore */ }
-  })();
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" />
-<!-- CSS-in-JS: ver comentário em index.html -->
-<script src="theme-tokens.js"></script>
-<script src="css-engine.js"></script>
-<script>
-  PokeStyles.setTheme(document.documentElement.getAttribute("data-theme") || "light");
-</script>
-<script src="theme.js" defer></script>
-<script src="sound.js" defer></script>
-<script src="pokeapi.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MonLink — MonJogos</title>
+  <meta name="description" content="Agrupe 16 Pokémon em 4 categorias escondidas antes que suas vidas acabem." />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("pokegames.theme");
+        if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) t = "dark";
+        document.documentElement.setAttribute("data-theme", t || "light");
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" />
+  <!-- CSS-in-JS: ver comentário em index.html -->
+  <script src="theme-tokens.js"></script>
+  <script src="css-engine.js"></script>
+  <script>
+    PokeStyles.setTheme(document.documentElement.getAttribute("data-theme") || "light");
+  </script>
+  <script src="theme.js" defer></script>
+  <script src="sound.js" defer></script>
+  <script src="pokeapi.js" defer></script>
 </head>
+
 <body>
 
-<header class="site-header">
-  <a class="brand" href="index.html">
-    <span class="brand-badge" aria-hidden="true"></span>
-    MonJogos
-  </a>
-  <nav class="nav-links" aria-label="Navegação principal">
-    <a href="index.html">Início</a>
-    <a href="monhunt.html">MonHunt</a>
-    <a href="monlink.html" class="active">MonLink</a>
-  </nav>
-  <div class="header-actions" id="header-actions"></div>
-</header>
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <span class="brand-badge" aria-hidden="true"></span>
+      MonJogos
+    </a>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="monhunt.html">MonHunt</a>
+      <a href="monlink.html" class="active">MonLink</a>
+    </nav>
+    <div class="header-actions" id="header-actions"></div>
+  </header>
 
-<main class="container">
-  <h1 class="center" style="margin-top:36px;"><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span> MonLink</h1>
-  <p class="center text-muted" style="max-width:580px;margin:0 auto 28px;">
-    16 Pokémon, 4 categorias escondidas. Selecione 4 que você acha que
-    pertencem ao mesmo grupo — a validação é imediata: acertou, o grupo
-    trava no lugar; errou, perde uma vida na hora.
-  </p>
+  <main class="container">
+    <h1 class="center" style="margin-top:36px;"><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+        </svg></span> MonLink</h1>
+    <p class="center text-muted" style="max-width:580px;margin:0 auto 28px;">
+      16 Pokémon, 4 categorias escondidas. Selecione 4 que você acha que
+      pertencem ao mesmo grupo — a validação é imediata: acertou, o grupo
+      trava no lugar; errou, perde uma vida na hora.
+    </p>
 
-  <!-- ---------- TELA DE SELEÇÃO DE DIFICULDADE ---------- -->
-  <section id="screen-difficulty" class="game-panel">
-    <h2 class="center" style="margin-top:0;">Escolha a dificuldade</h2>
-    <div class="difficulty-grid" id="difficulty-grid" role="radiogroup" aria-label="Dificuldade"></div>
-    <div class="center mt-16">
-      <button class="btn" id="btn-start-connection" disabled>Selecione uma dificuldade</button>
+    <!-- ---------- TELA DE SELEÇÃO DE DIFICULDADE ---------- -->
+    <section id="screen-difficulty" class="game-panel">
+      <h2 class="center" style="margin-top:0;">Escolha a dificuldade</h2>
+      <div class="difficulty-grid" id="difficulty-grid" role="radiogroup" aria-label="Dificuldade"></div>
+      <div class="center mt-16">
+        <button class="btn" id="btn-start-connection" disabled>Selecione uma dificuldade</button>
+      </div>
+    </section>
+
+    <!-- ---------- CARREGANDO ---------- -->
+    <section id="screen-loading" class="game-panel" style="display:none;">
+      <div class="loading-state">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="loading-text">Montando categorias e sorteando os 16 Pokémon…</p>
+      </div>
+    </section>
+
+    <!-- ---------- TELA DE JOGO ---------- -->
+    <section id="screen-game" class="game-panel" style="display:none;">
+      <div class="game-topbar">
+        <span class="pill" id="pill-difficulty">Dificuldade</span>
+        <div class="lives-row" id="lives-row" aria-label="Vidas restantes"></div>
+      </div>
+
+      <div class="connection-grid" id="connection-grid"></div>
+
+      <p class="center text-muted" id="selection-hint">Selecione 4 Pokémon — a validação acontece assim que você escolhe
+        o 4º.</p>
+      <div class="conn-actions">
+        <button class="btn secondary" id="btn-deselect" disabled>Limpar seleção</button>
+      </div>
+    </section>
+
+    <div class="center mt-24">
+      <button class="btn ghost" id="btn-change-difficulty" style="display:none;">← Trocar dificuldade</button>
     </div>
-  </section>
+  </main>
 
-  <!-- ---------- CARREGANDO ---------- -->
-  <section id="screen-loading" class="game-panel" style="display:none;">
-    <div class="loading-state">
-      <div class="spinner" aria-hidden="true"></div>
-      <p id="loading-text">Montando categorias e sorteando os 16 Pokémon…</p>
+  <!-- ---------- MODAL: fim de jogo ---------- -->
+  <div class="modal-backdrop" id="modal-end" style="display:none;">
+    <div class="modal end-screen" role="dialog" aria-modal="true" aria-labelledby="modal-end-title">
+      <div class="result-icon" id="end-emoji"></div>
+      <h2 id="modal-end-title">Você conectou tudo!</h2>
+      <p id="end-subtitle" class="text-muted"></p>
+      <div id="end-groups" class="solved-groups" style="text-align:left;"></div>
+      <div class="actions">
+        <button class="btn" id="btn-play-again">Jogar novamente</button>
+        <button class="btn secondary" id="btn-end-change-difficulty">Trocar dificuldade</button>
+      </div>
     </div>
-  </section>
-
-  <!-- ---------- TELA DE JOGO ---------- -->
-  <section id="screen-game" class="game-panel" style="display:none;">
-    <div class="game-topbar">
-      <span class="pill" id="pill-difficulty">Dificuldade</span>
-      <div class="lives-row" id="lives-row" aria-label="Vidas restantes"></div>
-    </div>
-
-    <div class="solved-groups" id="solved-groups"></div>
-    <div class="connection-grid" id="connection-grid"></div>
-
-    <p class="center text-muted" id="selection-hint">Selecione 4 Pokémon — a validação acontece assim que você escolhe o 4º.</p>
-    <div class="conn-actions">
-      <button class="btn secondary" id="btn-deselect" disabled>Limpar seleção</button>
-    </div>
-  </section>
-
-  <div class="center mt-24">
-    <button class="btn ghost" id="btn-change-difficulty" style="display:none;">← Trocar dificuldade</button>
   </div>
-</main>
 
-<!-- ---------- MODAL: fim de jogo ---------- -->
-<div class="modal-backdrop" id="modal-end" style="display:none;">
-  <div class="modal end-screen" role="dialog" aria-modal="true" aria-labelledby="modal-end-title">
-    <div class="result-icon" id="end-emoji"></div>
-    <h2 id="modal-end-title">Você conectou tudo!</h2>
-    <p id="end-subtitle" class="text-muted"></p>
-    <div id="end-groups" class="solved-groups" style="text-align:left;"></div>
-    <div class="actions">
-      <button class="btn" id="btn-play-again">Jogar novamente</button>
-      <button class="btn secondary" id="btn-end-change-difficulty">Trocar dificuldade</button>
-    </div>
-  </div>
-</div>
+  <div class="toast-region" id="toast-region" aria-live="polite"></div>
 
-<div class="toast-region" id="toast-region" aria-live="polite"></div>
-
-<script src="monlink.js" defer></script>
+  <script src="monlink.js" defer></script>
 </body>
+
 </html>

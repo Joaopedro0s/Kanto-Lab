@@ -91,7 +91,7 @@
       card.innerHTML =
         "<h3><span class=\"diff-dot\" aria-hidden=\"true\"></span>" + d.pt + " (" + d.label + ")</h3>" +
         "<p>" + d.description + "</p>" +
-        "<p class=\"text-muted\">Até " + d.maxCandidates + " candidatos · Gerações " +
+        "<p class=\"text-muted\">Gerações " +
         d.generations.map((g) => PokeAPI.GEN_LABEL[g].split(" ")[0]).join("-") + "</p>";
       card.addEventListener("click", () => {
         selectedDifficulty = d.key;
