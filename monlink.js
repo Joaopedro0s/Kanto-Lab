@@ -545,8 +545,8 @@
       });
     });
 
-    setTimeout(() => {
-      tileEls.forEach((t) => {
+    tileEls.forEach((t, i) => {
+      setTimeout(() => {
         t.classList.add("solved", "solve-pop");
         t.style.background = "var(--" + groupClass + "-bg)";
         t.style.color = "var(--" + groupClass + "-text)";
@@ -554,17 +554,17 @@
         t.disabled = true;
         t.style.transition = "";
         t.style.transform = "";
-      });
-      PokeSound.click();
-    }, 440);
+        PokeSound.click();
+      }, 440 + i * 70);
+    });
 
     setTimeout(() => {
       mergeIntoBanner(tileEls, groupClass, cat);
       if (state.solved.size === 4) {
         state.gameOver = true;
-        setTimeout(() => showEndScreen(true), 550);
+        setTimeout(() => showEndScreen(true), 700);
       }
-    }, 880);
+    }, 1180);
   }
 
   // Substitui as 4 células individuais por uma única barra colorida que
@@ -579,15 +579,13 @@
     banner.style.background = "var(--" + groupClass + "-bg)";
     banner.style.color = "var(--" + groupClass + "-text)";
     banner.innerHTML =
-      '<span class="merged-title">' + cat.title + "</span>" +
+      '<div class="merged-title-row"><span class="merged-title">' + cat.title + "</span></div>" +
       '<div class="merged-members">' +
       tileEls.map((t) => '<div class="merged-member">' + t.innerHTML + "</div>").join("") +
       "</div>";
 
     anchor.parentNode.insertBefore(banner, anchor);
     tileEls.forEach((t) => t.remove());
-
-    requestAnimationFrame(() => banner.classList.add("in"));
   }
 
   function failSelection(ids) {

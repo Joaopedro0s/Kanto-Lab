@@ -992,54 +992,90 @@ main > h1 {
 }
 .conn-tile.solved { pointer-events: none; }
 .conn-tile.shake { animation: shake .4s ease; }
-.conn-tile.solve-pop { animation: tile-solve-pop .4s ease; }
+.conn-tile.solve-pop { animation: tile-solve-pop .5s cubic-bezier(.22,.9,.3,1); }
 
 @keyframes tile-solve-pop {
-  0% { transform: scale(1); }
-  45% { transform: scale(1.08); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  35% { transform: scale(1.12); box-shadow: 0 0 0 7px rgba(255,255,255,.4); }
+  70% { transform: scale(.97); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
 }
 
 /* Barra que substitui as 4 células de um grupo acertado, ocupando a
-   linha inteira do grid — nasce discreta e "estoura" pro tamanho final. */
+   linha inteira do grid: título em cima, os 4 Pokémon embaixo em
+   destaque (do mesmo tamanho de antes, não miniaturizados), com uma
+   entrada elástica e um brilho passando por cima. */
 .conn-row-merged {
   grid-column: 1 / -1;
+  position: relative;
+  overflow: hidden;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  border-radius: 16px;
-  padding: 10px 16px;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 18px;
+  padding: 14px 16px 16px;
   opacity: 0;
-  transform: scale(.92);
-  transition: opacity .3s ease, transform .3s cubic-bezier(.2,1.4,.4,1);
+  animation: merged-banner-in .5s cubic-bezier(.22,1.5,.36,1) both;
 }
-.conn-row-merged.in { opacity: 1; transform: scale(1); }
+.conn-row-merged::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -60%;
+  width: 45%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,.55), transparent);
+  transform: skewX(-20deg);
+  animation: merged-shine .9s ease .12s both;
+  pointer-events: none;
+}
+@keyframes merged-banner-in {
+  0% { opacity: 0; transform: scale(.82) translateY(8px); }
+  60% { opacity: 1; transform: scale(1.035) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes merged-shine {
+  0% { left: -60%; opacity: 0; }
+  18% { opacity: .9; }
+  100% { left: 130%; opacity: 0; }
+}
+.conn-row-merged .merged-title-row { text-align: center; }
 .conn-row-merged .merged-title {
   font-weight: 800;
-  font-size: .72rem;
+  font-size: .8rem;
   text-transform: uppercase;
-  letter-spacing: .02em;
-  white-space: nowrap;
-  flex-shrink: 0;
-  max-width: 110px;
+  letter-spacing: .03em;
 }
 .conn-row-merged .merged-members {
-  display: flex;
-  flex: 1;
-  gap: 8px;
-  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 }
 .conn-row-merged .merged-member {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  flex: 1;
+  gap: 4px;
   min-width: 0;
+  opacity: 0;
+  animation: merged-member-in .45s cubic-bezier(.22,1.5,.36,1) both;
 }
-.conn-row-merged .merged-member img { width: 34px; height: 34px; object-fit: contain; image-rendering: pixelated; }
+.conn-row-merged .merged-member:nth-child(1) { animation-delay: .08s; }
+.conn-row-merged .merged-member:nth-child(2) { animation-delay: .16s; }
+.conn-row-merged .merged-member:nth-child(3) { animation-delay: .24s; }
+.conn-row-merged .merged-member:nth-child(4) { animation-delay: .32s; }
+@keyframes merged-member-in {
+  0% { opacity: 0; transform: translateY(10px) scale(.8); }
+  70% { opacity: 1; transform: translateY(-3px) scale(1.08); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.conn-row-merged .merged-member img {
+  width: 100%;
+  max-width: 72px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
 .conn-row-merged .merged-member span {
-  font-size: .62rem;
+  font-size: .72rem;
   font-weight: 700;
   text-transform: capitalize;
   white-space: nowrap;
@@ -1048,8 +1084,9 @@ main > h1 {
   max-width: 100%;
 }
 @media (max-width: 640px) {
-  .conn-row-merged { flex-wrap: wrap; gap: 8px; }
-  .conn-row-merged .merged-title { max-width: 100%; }
+  .conn-row-merged .merged-member img { max-width: 48px; }
+  .conn-row-merged .merged-member span { font-size: .62rem; }
+  .conn-row-merged .merged-title { font-size: .72rem; }
 }
 
 @keyframes shake {
